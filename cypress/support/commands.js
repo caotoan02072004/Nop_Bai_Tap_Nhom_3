@@ -47,7 +47,6 @@ Cypress.Commands.add('loginByApi', () => {
     
   }).then((res) => {
     cy.log('Login successful, token received')
-    // Phải visit trang trước khi set localStorage
     cy.visit('https://beta.cheppy.ai')
     cy.window().then((win) => {
         cy.setCookie('access-token', res.body.access_token)
