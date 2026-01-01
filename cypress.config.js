@@ -7,10 +7,11 @@ module.exports = defineConfig({
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     env: {
       // Đọc từ .env file
-      username: process.env.CYPRESS_USERNAME,
-      password: process.env.CYPRESS_PASSWORD,
-      grant_type: process.env.CYPRESS_GRANT_TYPE,
-      client_id: process.env.CYPRESS_CLIENT_ID
+      username: process.env.CHEPPY_USERNAME,
+      password: process.env.CHEPPY_PASSWORD,
+      grant_type: process.env.CHEPPY_GRANT_TYPE,
+      client_id: process.env.CHEPPY_CLIENT_ID,
+      authenticate: process.env.CHEPPY_AUTH,
     },
     setupNodeEvents(on, config) {
       // implement node event listeners here

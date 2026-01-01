@@ -9,11 +9,11 @@ describe('gen mission', () => {
         cy.getCookie('access-token').should('exist');
       }
     })
-    cy.visit('https://beta.cheppy.ai');
+    cy.visit('/');
   })
 
   it('pronunciation', () => {
-    cy.visit('https://beta.cheppy.ai/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102')
+    cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102')
 
     expandTemplate('template-pronunciation-collapse');
     cy.get('[data-cy="template-content-pronunciation"]').within(() => {

@@ -24,7 +24,7 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-Cypress.Commands.add('login_cheppy', (username, password) => {
+Cypress.Commands.add('loginByUI', (username, password) => {
     cy.get('[name="username"]').type(username)
     cy.get('[name="password"]').type(password)
     cy.contains('span', 'Sign in').click()
@@ -32,7 +32,7 @@ Cypress.Commands.add('login_cheppy', (username, password) => {
 Cypress.Commands.add('loginByApi', () => {
   cy.request({
     method: 'POST',
-    url: 'https://beta.cheppy.ai/api/security/authenticate',
+    url: Cypress.env('authenticate'),
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
@@ -47,7 +47,7 @@ Cypress.Commands.add('loginByApi', () => {
     
   }).then((res) => {
     cy.log('Login successful, token received')
-    cy.visit('https://beta.cheppy.ai')
+    cy.visit('/')
     cy.window().then((win) => {
         cy.setCookie('access-token', res.body.access_token)
         cy.setCookie('refresh-token', res.body.refresh_token)
