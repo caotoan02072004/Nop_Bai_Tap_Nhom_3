@@ -17,15 +17,36 @@ describe('gen mission', () => {
 
     expandTemplate('template-pronunciation-collapse');
     cy.get('[data-cy="template-content-pronunciation"]').within(() => {
-      clickControl('Image', 'plus', 2);
-      clickControl('Audio', 'plus', 2);
+      // clickControl('Image', 'plus', 2);
+      clickControl('Audio', 'plus', 1);
     })
 
-    expandTemplate('template-matching_pairs-collapse');
-    cy.get('[data-cy="template-content-matching_pairs"]').within(() => {
-      clickControl('Image - Text', 'plus', 2);
-      clickControl('Audio- Text', 'plus', 2);
+    cy.intercept('POST', '/api/lcm/web/excercise/create-excercise-pronunciation').as('generateQuestion');
+
+    cy.get('button[data-cy="generate-question"]').click();
+
+    const responses = []
+
+    cy.wait('@generateQuestion').then(({ response }) => {
+      responses.push(response.body);
+      cy.log(response.body.data.id);
     })
+
+    cy.wait('@generateQuestion').then(({ response }) => {
+      responses.push(response.body);
+      cy.log(response.body.data.id);
+    })
+    // cy.get('[data-rbd-droppable-id="menu"]')
+    //   .contains('[data-rbd-draggable-id]', 'Pronunciation')
+    //   .find('span[aria-label="loading"]', { timeout: 10000 })
+    //   .should('not.exist')
+
+
+    // expandTemplate('template-matching_pairs-collapse');
+    // cy.get('[data-cy="template-content-matching_pairs"]').within(() => {
+    //   clickControl('Image - Text', 'plus', 2);
+    //   clickControl('Audio- Text', 'plus', 2);
+    // })
 
   })
 
