@@ -12,7 +12,7 @@ describe('My Class', () => {
     })
 
 
-    /*it('MC_010_Tạo lớp mới Active thành công', () => {
+    it('MC_010_Tạo lớp mới Active thành công', () => {
         // // Truy cập vào trang web
         // cy.visit('https://beta.cheppy.ai/signin')
         // // Đăng nhập tài khoản
@@ -75,7 +75,7 @@ describe('My Class', () => {
                 cy.contains('0 Student')
                 cy.contains('Active')
             })
-    })*/
+    })
 
     it('MC_012_Tạo lớp mới Active thành công', () => {
         // Chọn nút New Class
@@ -99,13 +99,14 @@ describe('My Class', () => {
             .check({ force: true })
         cy.wait(500)
         // Mở datepicker trong đúng form End date
-        cy.contains('End date')
+        /*cy.contains('End date')
             .closest('.ant-form-item')
             .within(() => {
                 cy.get('input')
                 .should('be.visible')
                 .click()
-        })
+        })*/
+       cy.get('input[placeholder="Select date"]').eq(1).click()
         // Chọn 30/09/2026
         cy.get('.ant-picker-year-btn').click()
         cy.contains('.ant-picker-year-panel-cell', '2026').click()
