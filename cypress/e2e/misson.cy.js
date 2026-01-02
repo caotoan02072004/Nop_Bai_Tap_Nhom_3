@@ -14,6 +14,13 @@ describe('gen mission', () => {
 
   it('happy case create pronunciation', () => {
     let originalMp3Blob;
+    cy.intercept('POST', '/api/ai-integrate/ai/phonemes-scoring').as('uploadScore');
+    cy.intercept('POST', '/api/lcm/web/excercise/create-excercise-pronunciation').as('generateQuestion');
+
+    const hasAudio = (item) => {
+      return item.audio !== null;
+    };
+
     // cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102');
     cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102', {
       onBeforeLoad(win) {
@@ -39,65 +46,69 @@ describe('gen mission', () => {
         });
       },
     });
-
-    cy.intercept('POST', '/api/ai-integrate/ai/phonemes-scoring').as('uploadScore');
     
+    const countQuestion = 2;
     expandTemplate('template-pronunciation-collapse');
     cy.get('[data-cy="template-content-pronunciation"]').within(() => {
       // clickControl('Image', 'plus', 2);
-      clickControl('Audio', 'plus', 1);
+      clickControl('Audio', 'plus', countQuestion);
     })
-
-    cy.intercept('POST', '/api/lcm/web/excercise/create-excercise-pronunciation').as('generateQuestion');
-
     cy.get('button[data-cy="generate-question"]').click();
-    const hasAudio = (item) => {
-      return item.audio !== null;
-    };
+    
     let idQuestion = '';
     let indexQuesion = null;
-    cy.wait('@generateQuestion', { timeout: 5000 }).then(({ response }) => {
-      const listQuestions = response.body.data.data;
-      listQuestions.forEach((item, index) => {
-        if (!hasAudio(item)) {
-          idQuestion = item.id;
-          indexQuesion = index;
-        }
-      })
-    })
-
-    cy.wait('@generateQuestion', { timeout: 15000 }).then(({ response }) => {
-      const listQuestions = response.body.data.data;
-      listQuestions.forEach(item => {
-        if (hasAudio(item) && idQuestion === item.id) {
-          cy.request({
-              url:Cypress.env('fileUrl')+item.audio,
-              encoding: null,
-            }).then((response) => {
-              originalMp3Blob = new Blob([response.body], { type: 'audio/mpeg' });
+    let questions = [];
+    for (let i = 0; i < countQuestion; i++) {
+      cy.wait('@generateQuestion', { timeout: 5000 }).then(({ response }) => {
+        const listQuestions = response.body.data.data;
+        listQuestions.forEach((item, index) => {
+          if (!hasAudio(item)) {
+            idQuestion = item.id;
+            indexQuesion = index;
+            questions.push({
+              index: indexQuesion,
+              id: idQuestion
             });
-
-          if(indexQuesion !== null){
-            clickPreviewByIndexAndName(indexQuesion+1, "Pronunciation");
-            
-            cy.get('svg[viewBox="0 0 352 512"]')
-              .closest('button')
-              .click();
-            cy.contains('Tap to stop')
-              .prev('button')
-              .click()
-            cy.wait('@uploadScore').then((interception) => {
-              expect(interception.response.statusCode).to.eq(200);
-            });
-            cy.contains('button', 'Submit').click();
-            cy.contains('Correct!').should('be.visible');
-            cy.get('[aria-label="close"]')
-              .closest('button')
-              .click()
           }
-        }
+        })
       })
-    })
+    }
+    for (let i = 0; i < countQuestion; i++) {
+      cy.wait('@generateQuestion', { timeout: 15000 }).then(({ response }) => {
+        const listQuestions = response.body.data.data;
+        idQuestion = questions[0].id;
+        indexQuesion = questions[0].index;
+        listQuestions.forEach(item => {
+          if (hasAudio(item) && idQuestion === item.id) {
+            cy.request({
+                url:Cypress.env('fileUrl')+item.audio,
+                encoding: null,
+              }).then((response) => {
+                originalMp3Blob = new Blob([response.body], { type: 'audio/mpeg' });
+              });
+            
+            if(indexQuesion !== null){
+              clickPreviewByIndexAndName(indexQuesion+1, "Pronunciation");
+              
+              cy.get('svg[viewBox="0 0 352 512"]')
+                .closest('button')
+                .click();
+              cy.contains('Tap to stop')
+                .prev('button')
+                .click()
+              cy.wait('@uploadScore').then((interception) => {
+                expect(interception.response.statusCode).to.eq(200);
+              });
+              cy.contains('button', 'Submit').click();
+              cy.contains('Correct!').should('be.visible');
+              cy.get('[aria-label="close"]')
+                .closest('button')
+                .click()
+            }
+          }
+        })
+      })
+    }
   })
 
   // it('create mission with grade', () => {
