@@ -1,4 +1,4 @@
-import { clickControl, expandTemplate } from '../support/utils'
+import { clickControl, expandTemplate, clickPreviewByIndexAndName } from '../support/utils'
 
 describe('gen mission', () => {
   beforeEach(() => {
@@ -13,8 +13,8 @@ describe('gen mission', () => {
   })
 
   it('pronunciation', () => {
-    cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102')
-
+    cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102');
+    
     expandTemplate('template-pronunciation-collapse');
     cy.get('[data-cy="template-content-pronunciation"]').within(() => {
       // clickControl('Image', 'plus', 2);
@@ -24,18 +24,34 @@ describe('gen mission', () => {
     cy.intercept('POST', '/api/lcm/web/excercise/create-excercise-pronunciation').as('generateQuestion');
 
     cy.get('button[data-cy="generate-question"]').click();
-
-    const responses = []
-
-    cy.wait('@generateQuestion').then(({ response }) => {
-      responses.push(response.body);
-      cy.log(response.body.data.id);
+    const hasAudio = (item) => {
+      return item.audio !== null;
+    };
+    let idQuestion = '';
+    let indexQuesion = null;
+    cy.wait('@generateQuestion', { timeout: 10000 }).then(({ response }) => {
+      const listQuestions = response.body.data.data;
+      listQuestions.forEach((item, index) => {
+        if (!hasAudio(item)) {
+          idQuestion = item.id;
+          indexQuesion = index;
+        }
+      })
     })
 
-    cy.wait('@generateQuestion').then(({ response }) => {
-      responses.push(response.body);
-      cy.log(response.body.data.id);
+    cy.wait('@generateQuestion', { timeout: 10000 }).then(({ response }) => {
+      const listQuestions = response.body.data.data;
+      listQuestions.forEach(item => {
+        if (hasAudio(item) && idQuestion === item.id) {
+          cy.log(item.audio);
+          if(indexQuesion !== null){
+            clickPreviewByIndexAndName(indexQuesion+1, "Pronunciation");
+          }
+          
+        }
+      })
     })
+
     // cy.get('[data-rbd-droppable-id="menu"]')
     //   .contains('[data-rbd-draggable-id]', 'Pronunciation')
     //   .find('span[aria-label="loading"]', { timeout: 10000 })

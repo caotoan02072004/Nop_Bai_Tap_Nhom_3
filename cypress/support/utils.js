@@ -19,3 +19,16 @@ export const expandTemplate = (templateName) => {
         }
     })
 }
+
+export function clickPreviewByIndexAndName(index, name) {
+  const regex = new RegExp(`${index}\\.\\s*${name}`, 'i')
+
+  cy.contains('.ant-typography', regex)
+    .closest('.bg-white.flex.flex-col.rounded-2xl')
+    .within(() => {
+      cy.get('.flex.items-center.justify-end')
+        .find('button')
+        .first()
+        .click()
+    })
+}

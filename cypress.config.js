@@ -12,6 +12,7 @@ module.exports = defineConfig({
       grant_type: process.env.CHEPPY_GRANT_TYPE,
       client_id: process.env.CHEPPY_CLIENT_ID,
       authenticate: process.env.CHEPPY_AUTH,
+      fileUrl: process.env.FILE_URL
     },
     setupNodeEvents(on, config) {
       // implement node event listeners here
