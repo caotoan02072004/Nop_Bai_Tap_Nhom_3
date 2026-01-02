@@ -1,4 +1,4 @@
-import { clickControl, expandTemplate, clickPreviewByIndexAndName } from '../support/utils'
+import { clickControl, expandTemplate, clickPreviewByIndexAndName, waitForImageReady } from '../support/utils'
 
 describe('gen mission', () => {
   beforeEach(() => {
@@ -11,14 +11,13 @@ describe('gen mission', () => {
     })
     cy.visit('/');
   })
-
-  it('happy case create pronunciation', () => {
+  it('happy case create pronunciation image', () => {
     let originalMp3Blob;
     cy.intercept('POST', '/api/ai-integrate/ai/phonemes-scoring').as('uploadScore');
     cy.intercept('POST', '/api/lcm/web/excercise/create-excercise-pronunciation').as('generateQuestion');
 
-    const hasAudio = (item) => {
-      return item.audio !== null;
+    const hasImage = (item) => {
+      return item.image !== null;
     };
 
     // cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102');
@@ -47,11 +46,11 @@ describe('gen mission', () => {
       },
     });
     
-    const countQuestion = 2;
+    const countQuestion = 1;
     expandTemplate('template-pronunciation-collapse');
     cy.get('[data-cy="template-content-pronunciation"]').within(() => {
-      // clickControl('Image', 'plus', 2);
-      clickControl('Audio', 'plus', countQuestion);
+      clickControl('Image', 'plus', countQuestion);
+      // clickControl('Audio', 'plus', countQuestion);
     })
     cy.get('button[data-cy="generate-question"]').click();
     
@@ -62,7 +61,7 @@ describe('gen mission', () => {
       cy.wait('@generateQuestion', { timeout: 5000 }).then(({ response }) => {
         const listQuestions = response.body.data.data;
         listQuestions.forEach((item, index) => {
-          if (!hasAudio(item)) {
+          if (!hasImage(item) && item.mediaType === "IMAGE") {
             idQuestion = item.id;
             indexQuesion = index;
             questions.push({
@@ -79,37 +78,135 @@ describe('gen mission', () => {
         idQuestion = questions[0].id;
         indexQuesion = questions[0].index;
         listQuestions.forEach(item => {
-          if (hasAudio(item) && idQuestion === item.id) {
-            cy.request({
-                url:Cypress.env('fileUrl')+item.audio,
-                encoding: null,
-              }).then((response) => {
-                originalMp3Blob = new Blob([response.body], { type: 'audio/mpeg' });
-              });
-            
-            if(indexQuesion !== null){
-              clickPreviewByIndexAndName(indexQuesion+1, "Pronunciation");
-              
-              cy.get('svg[viewBox="0 0 352 512"]')
-                .closest('button')
-                .click();
-              cy.contains('Tap to stop')
-                .prev('button')
-                .click()
-              cy.wait('@uploadScore').then((interception) => {
-                expect(interception.response.statusCode).to.eq(200);
-              });
-              cy.contains('button', 'Submit').click();
-              cy.contains('Correct!').should('be.visible');
-              cy.get('[aria-label="close"]')
-                .closest('button')
-                .click()
-            }
+          if (hasImage(item) && idQuestion === item.id && item.mediaType === "IMAGE") {
+            // cy.request({
+            //     url:Cypress.env('fileUrl')+item.audio,
+            //     encoding: null,
+            //   }).then((response) => {
+            //     originalMp3Blob = new Blob([response.body], { type: 'audio/mpeg' });
+            //   });
+            cy.get('.image-custom')
+              .find('.ant-spin-spinning', { timeout: 20000 })
+              .should('not.exist')
+            clickPreviewByIndexAndName(indexQuesion+1, "Pronunciation");
+            cy.get('svg[viewBox="0 0 352 512"]')
+              .closest('button')
+              .click();
+            cy.contains('Tap to stop')
+              .prev('button')
+              .click()
+            cy.wait('@uploadScore').then((interception) => {
+              expect(interception.response.statusCode).to.eq(200);
+            });
+            cy.contains('button', 'Submit').click();
+            cy.contains('Correct!').should('be.visible');
+            cy.get('[aria-label="close"]')
+              .closest('button')
+              .click()
           }
         })
       })
     }
   })
+
+  // it('happy case create pronunciation audio', () => {
+  //   let originalMp3Blob;
+  //   cy.intercept('POST', '/api/ai-integrate/ai/phonemes-scoring').as('uploadScore');
+  //   cy.intercept('POST', '/api/lcm/web/excercise/create-excercise-pronunciation').as('generateQuestion');
+
+  //   const hasAudio = (item) => {
+  //     return item.audio !== null;
+  //   };
+
+  //   // cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102');
+    // cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102', {
+    //   onBeforeLoad(win) {
+    //     cy.stub(win.navigator.mediaDevices, 'getUserMedia').callsFake(() => {
+    //       const AudioContext = win.AudioContext || win.webkitAudioContext;
+    //       const ctx = new AudioContext();
+    //       const dest = ctx.createMediaStreamDestination();
+    //       const osc = ctx.createOscillator();
+    //       osc.connect(dest);
+    //       osc.start();
+    //       return Promise.resolve(dest.stream);
+    //     });
+
+    //     // Trộm long tráo phụng
+    //     const originalAppend = win.FormData.prototype.append;
+    //     cy.stub(win.FormData.prototype, 'append').callsFake(function (key, value, filename) {
+    //       if (key === 'audio') {
+    //         if (originalMp3Blob) {
+    //           return originalAppend.call(this, key, originalMp3Blob, 'recording.mp3');
+    //         }
+    //       }
+    //       return originalAppend.apply(this, arguments);
+    //     });
+    //   },
+    // });
+    
+  //   const countQuestion = 2;
+  //   expandTemplate('template-pronunciation-collapse');
+  //   cy.get('[data-cy="template-content-pronunciation"]').within(() => {
+  //     // clickControl('Image', 'plus', 2);
+  //     clickControl('Audio', 'plus', countQuestion);
+  //   })
+  //   cy.get('button[data-cy="generate-question"]').click();
+    
+  //   let idQuestion = '';
+  //   let indexQuesion = null;
+  //   let questions = [];
+  //   for (let i = 0; i < countQuestion; i++) {
+  //     cy.wait('@generateQuestion', { timeout: 5000 }).then(({ response }) => {
+  //       const listQuestions = response.body.data.data;
+  //       listQuestions.forEach((item, index) => {
+  //         if (!hasAudio(item)) {
+  //           idQuestion = item.id;
+  //           indexQuesion = index;
+  //           questions.push({
+  //             index: indexQuesion,
+  //             id: idQuestion
+  //           });
+  //         }
+  //       })
+  //     })
+  //   }
+  //   for (let i = 0; i < countQuestion; i++) {
+  //     cy.wait('@generateQuestion', { timeout: 15000 }).then(({ response }) => {
+  //       const listQuestions = response.body.data.data;
+  //       idQuestion = questions[0].id;
+  //       indexQuesion = questions[0].index;
+  //       listQuestions.forEach(item => {
+  //         if (hasAudio(item) && idQuestion === item.id) {
+  //           cy.request({
+  //               url:Cypress.env('fileUrl')+item.audio,
+  //               encoding: null,
+  //             }).then((response) => {
+  //               originalMp3Blob = new Blob([response.body], { type: 'audio/mpeg' });
+  //             });
+            
+  //           if(indexQuesion !== null){
+  //             clickPreviewByIndexAndName(indexQuesion+1, "Pronunciation");
+              
+  //             cy.get('svg[viewBox="0 0 352 512"]')
+  //               .closest('button')
+  //               .click();
+  //             cy.contains('Tap to stop')
+  //               .prev('button')
+  //               .click()
+  //             cy.wait('@uploadScore').then((interception) => {
+  //               expect(interception.response.statusCode).to.eq(200);
+  //             });
+  //             cy.contains('button', 'Submit').click();
+  //             cy.contains('Correct!').should('be.visible');
+  //             cy.get('[aria-label="close"]')
+  //               .closest('button')
+  //               .click()
+  //           }
+  //         }
+  //       })
+  //     })
+  //   }
+  // })
 
   // it('create mission with grade', () => {
   //   cy.fixture('mission').then((data) => {
