@@ -12,8 +12,35 @@ describe('gen mission', () => {
     cy.visit('/');
   })
 
-  it('pronunciation', () => {
-    cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102');
+  it('happy case create pronunciation', () => {
+    let originalMp3Blob;
+    // cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102');
+    cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102', {
+      onBeforeLoad(win) {
+        cy.stub(win.navigator.mediaDevices, 'getUserMedia').callsFake(() => {
+          const AudioContext = win.AudioContext || win.webkitAudioContext;
+          const ctx = new AudioContext();
+          const dest = ctx.createMediaStreamDestination();
+          const osc = ctx.createOscillator();
+          osc.connect(dest);
+          osc.start();
+          return Promise.resolve(dest.stream);
+        });
+
+        // Trộm long tráo phụng
+        const originalAppend = win.FormData.prototype.append;
+        cy.stub(win.FormData.prototype, 'append').callsFake(function (key, value, filename) {
+          if (key === 'audio') {
+            if (originalMp3Blob) {
+              return originalAppend.call(this, key, originalMp3Blob, 'recording.mp3');
+            }
+          }
+          return originalAppend.apply(this, arguments);
+        });
+      },
+    });
+
+    cy.intercept('POST', '/api/ai-integrate/ai/phonemes-scoring').as('uploadScore');
     
     expandTemplate('template-pronunciation-collapse');
     cy.get('[data-cy="template-content-pronunciation"]').within(() => {
@@ -29,7 +56,7 @@ describe('gen mission', () => {
     };
     let idQuestion = '';
     let indexQuesion = null;
-    cy.wait('@generateQuestion', { timeout: 10000 }).then(({ response }) => {
+    cy.wait('@generateQuestion', { timeout: 5000 }).then(({ response }) => {
       const listQuestions = response.body.data.data;
       listQuestions.forEach((item, index) => {
         if (!hasAudio(item)) {
@@ -39,31 +66,38 @@ describe('gen mission', () => {
       })
     })
 
-    cy.wait('@generateQuestion', { timeout: 10000 }).then(({ response }) => {
+    cy.wait('@generateQuestion', { timeout: 15000 }).then(({ response }) => {
       const listQuestions = response.body.data.data;
       listQuestions.forEach(item => {
         if (hasAudio(item) && idQuestion === item.id) {
-          cy.log(item.audio);
+          cy.request({
+              url:Cypress.env('fileUrl')+item.audio,
+              encoding: null,
+            }).then((response) => {
+              originalMp3Blob = new Blob([response.body], { type: 'audio/mpeg' });
+            });
+
           if(indexQuesion !== null){
             clickPreviewByIndexAndName(indexQuesion+1, "Pronunciation");
+            
+            cy.get('svg[viewBox="0 0 352 512"]')
+              .closest('button')
+              .click();
+            cy.contains('Tap to stop')
+              .prev('button')
+              .click()
+            cy.wait('@uploadScore').then((interception) => {
+              expect(interception.response.statusCode).to.eq(200);
+            });
+            cy.contains('button', 'Submit').click();
+            cy.contains('Correct!').should('be.visible');
+            cy.get('[aria-label="close"]')
+              .closest('button')
+              .click()
           }
-          
         }
       })
     })
-
-    // cy.get('[data-rbd-droppable-id="menu"]')
-    //   .contains('[data-rbd-draggable-id]', 'Pronunciation')
-    //   .find('span[aria-label="loading"]', { timeout: 10000 })
-    //   .should('not.exist')
-
-
-    // expandTemplate('template-matching_pairs-collapse');
-    // cy.get('[data-cy="template-content-matching_pairs"]').within(() => {
-    //   clickControl('Image - Text', 'plus', 2);
-    //   clickControl('Audio- Text', 'plus', 2);
-    // })
-
   })
 
   // it('create mission with grade', () => {
