@@ -14,9 +14,9 @@ export const clickControl = (type, action = 'plus', times = 1) => {
 export const expandTemplate = (templateName) => {
   cy.get(`[data-cy="${templateName}"]`)
     .then($collapse => {
-        if ($collapse.attr('aria-expanded') !== 'true') {
-            cy.wrap($collapse).click()
-        }
+      if ($collapse.attr('aria-expanded') !== 'true') {
+        cy.wrap($collapse).click()
+      }
     })
 }
 
@@ -55,7 +55,7 @@ export function clickPreviewByIndexAndName(index, name, type = 0) {
             .click()
         })
     }
-    
+
 }
 
 export function hasAudio (item) {
@@ -92,4 +92,23 @@ export function matchMediaType(item, type) {
     }
 
     return false;
+}
+
+
+export function saveApiResponseToFile(alias, fileName) {
+  cy.wait(alias).then(({ request, response }) => {
+    expect(response).to.exist;
+
+    const output = {
+      url: request.url,
+      method: request.method,
+      status: response.statusCode,
+      headers: response.headers,
+      body: response.body,
+    };
+
+    cy.writeFile(`cypress/debug/${fileName}`, output, {
+      log: true,
+    });
+  });
 }

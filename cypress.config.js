@@ -20,23 +20,23 @@ module.exports = defineConfig({
       // implement node event listeners here
       on('before:browser:launch', (browser, launchOptions) => {
         if (browser.family === 'chromium' && browser.name !== 'electron') {
-          launchOptions.args = launchOptions.args.filter(arg => 
+          launchOptions.args = launchOptions.args.filter(arg =>
             arg !== '--enable-automation'
           );
-          
+
           launchOptions.args.push('--disable-blink-features=AutomationControlled');
           launchOptions.args.push('--disable-dev-shm-usage');
           launchOptions.args.push('--no-sandbox');
           launchOptions.args.push('--disable-web-security');
           launchOptions.args.push('--disable-features=IsolateOrigins,site-per-process');
           launchOptions.args.push('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-          
+
           launchOptions.args.push('--disable-infobars');
           launchOptions.args.push('--start-maximized');
-          
+
           return launchOptions;
         }
-        
+
         return launchOptions;
       });
     },
