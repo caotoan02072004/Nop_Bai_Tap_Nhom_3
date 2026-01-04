@@ -34,11 +34,11 @@ export function clickPreviewByIndexAndName(index, name) {
 }
 
 export function hasAudio (item) {
-    return item.audio !== null;
+    return item.audio !== null && item.audio !== '';
 }
 
 export function hasImage (item) {
-    return item.image !== null;
+    return item.image !== null && item.image !== '';
 }
 
 export function hasPair (item) {

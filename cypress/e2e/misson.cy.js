@@ -13,31 +13,14 @@ describe('gen mission', () => {
   })
 
   it('happy case create matching pairs audio-text', () => {
-    cy.intercept('POST', '/api/lcm/web/excercise/create-excercise-matching-pairs').as('generateQuestion');
+    cy.intercept('POST', '/api/lcm/web/excercise/create-drag-and-drop').as('generateQuestion');
     const countQuestion = 1;
 
     cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102');
 
-    // clickPreviewByIndexAndName(1+1, "Matching pairs");
-
-    // cy.get('.pointLeft').each(($pointLeft, index) => {
-    // cy.wrap($pointLeft)
-    //     .closest('[class*="rounded-md"]')
-    //     .within(() => {
-    //       cy.get('audio source')
-    //         .invoke('attr', 'src')
-    //         .then((leftSrc) => {
-
-    //           // click left
-    //           cy.wrap($pointLeft).click({ force: true });
-    //           cy.log(leftSrc)
-    //         });
-    //     });
-    // });
-
-    expandTemplate('template-matching_pairs-collapse');
-    cy.get('[data-cy="template-content-matching_pairs"]').within(() => {
-      clickControl('Audio- Text', 'plus', countQuestion);
+    expandTemplate('template-drag_and_drop-collapse');
+    cy.get('[data-cy="template-content-drag_and_drop"]').within(() => {
+      clickControl('Audio', 'plus', countQuestion);
     });
     cy.get('button[data-cy="generate-question"]').click();
 
@@ -48,7 +31,7 @@ describe('gen mission', () => {
       cy.wait('@generateQuestion', { timeout: 5000 }).then(({ response }) => {
         const listQuestions = response.body.data.data;
         listQuestions.forEach((item, index) => {
-          if (!hasPair(item) && item.exerciseType === "matching_pairs" && item.mediaType === "TEXT_AUDIO") {
+          if (!hasAudio(item) && item.exerciseType === "drag_and_drop" && item.mediaType === "AUDIO") {
             idQuestion = item.id;
             indexQuesion = index;
             questions.push({
@@ -62,39 +45,23 @@ describe('gen mission', () => {
     for (let i = 0; i < countQuestion; i++) {
       cy.wait('@generateQuestion', { timeout: 25000 }).then(({ response }) => {
         const listQuestions = response.body.data.data;
-        idQuestion = questions[0].id;
-        indexQuesion = questions[0].index;
+        idQuestion = questions[i].id;
+        indexQuesion = questions[i].index;
         listQuestions.forEach(item => {
-          if (hasPair(item) && idQuestion === item.id && item.exerciseType === "matching_pairs"  && item.mediaType === "TEXT_AUDIO") {
-            const pairLst = item.pairLst;
-            let questionPairs = [];
-            pairLst.left.forEach(pairL => {
-              questionPairs.push({
-                audio: pairL.audio,
-                title: pairL.label
-              });
-            });
+          if (hasAudio(item) && idQuestion === item.id && item.exerciseType === "drag_and_drop"  && item.mediaType === "AUDIO") {
+            const answers = item.answers;
             if(indexQuesion !== null){
-              clickPreviewByIndexAndName(indexQuesion+1, "Matching pairs");
-              cy.get('.pointLeft').each(($pointLeft) => {
-                cy.wrap($pointLeft)
-                  .closest('[class*="rounded-md"]')
-                  .find('audio source')
-                  .invoke('attr', 'src')
-                  .then((leftSrc) => {
-                    cy.wrap($pointLeft).click({ force: true });
-
-                    const pathAudio = new URL(leftSrc).searchParams.get('path');
-                    const matched = questionPairs.find(q => q.audio === pathAudio);
-                    expect(matched, 'matched question').to.exist;
-
-                    const title = matched.title;
-                    cy.log('title: ' + title);
-
-                    cy.contains('.text-xs', title)
-                      .parents('.rounded-md')
-                      .should('have.descendants', '.pointRight')
-                      .click()
+              clickPreviewByIndexAndName(indexQuesion+1, "Drag and drop");
+              answers.forEach((text, index) => {
+                cy.contains('[data-option-index]', text)
+                  .should('be.visible')
+                  .click();
+                cy.wait(300);
+                cy.get(`[data-index="${index}"]`)
+                  .should('be.visible')
+                  .invoke('text')
+                  .then(t => {
+                    expect(t.trim()).to.eq(text);
                   });
               });
               cy.contains('button', 'Submit').click();
@@ -107,8 +74,105 @@ describe('gen mission', () => {
         })
       })
     }
-
   })
+
+  // it('happy case create matching pairs audio-text', () => {
+  //   cy.intercept('POST', '/api/lcm/web/excercise/create-excercise-matching-pairs').as('generateQuestion');
+  //   const countQuestion = 1;
+
+  //   cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102');
+
+  //   // clickPreviewByIndexAndName(1+1, "Matching pairs");
+
+  //   // cy.get('.pointLeft').each(($pointLeft, index) => {
+  //   // cy.wrap($pointLeft)
+  //   //     .closest('[class*="rounded-md"]')
+  //   //     .within(() => {
+  //   //       cy.get('audio source')
+  //   //         .invoke('attr', 'src')
+  //   //         .then((leftSrc) => {
+
+  //   //           // click left
+  //   //           cy.wrap($pointLeft).click({ force: true });
+  //   //           cy.log(leftSrc)
+  //   //         });
+  //   //     });
+  //   // });
+
+  //   expandTemplate('template-matching_pairs-collapse');
+  //   cy.get('[data-cy="template-content-matching_pairs"]').within(() => {
+  //     clickControl('Audio- Text', 'plus', countQuestion);
+  //   });
+  //   cy.get('button[data-cy="generate-question"]').click();
+
+  //   let idQuestion = '';
+  //   let indexQuesion = null;
+  //   let questions = [];
+  //   for (let i = 0; i < countQuestion; i++) {
+  //     cy.wait('@generateQuestion', { timeout: 5000 }).then(({ response }) => {
+  //       const listQuestions = response.body.data.data;
+  //       listQuestions.forEach((item, index) => {
+  //         if (!hasPair(item) && item.exerciseType === "matching_pairs" && item.mediaType === "TEXT_AUDIO") {
+  //           idQuestion = item.id;
+  //           indexQuesion = index;
+  //           questions.push({
+  //             index: indexQuesion,
+  //             id: idQuestion
+  //           });
+  //         }
+  //       })
+  //     })
+  //   }
+  //   for (let i = 0; i < countQuestion; i++) {
+  //     cy.wait('@generateQuestion', { timeout: 25000 }).then(({ response }) => {
+  //       const listQuestions = response.body.data.data;
+  //       idQuestion = questions[i].id;
+  //       indexQuesion = questions[i].index;
+  //       listQuestions.forEach(item => {
+  //         if (hasPair(item) && idQuestion === item.id && item.exerciseType === "matching_pairs"  && item.mediaType === "TEXT_AUDIO") {
+  //           const pairLst = item.pairLst;
+  //           let questionPairs = [];
+  //           pairLst.left.forEach(pairL => {
+  //             questionPairs.push({
+  //               audio: pairL.audio,
+  //               title: pairL.label
+  //             });
+  //           });
+  //           if(indexQuesion !== null){
+  //             clickPreviewByIndexAndName(indexQuesion+1, "Matching pairs");
+  //             cy.get('.pointLeft').each(($pointLeft) => {
+  //               cy.wrap($pointLeft)
+  //                 .closest('[class*="rounded-md"]')
+  //                 .find('audio source')
+  //                 .invoke('attr', 'src')
+  //                 .then((leftSrc) => {
+  //                   cy.wrap($pointLeft).click({ force: true });
+
+  //                   const pathAudio = new URL(leftSrc).searchParams.get('path');
+  //                   const matched = questionPairs.find(q => q.audio === pathAudio);
+  //                   expect(matched, 'matched question').to.exist;
+
+  //                   const title = matched.title;
+  //                   cy.log('title: ' + title);
+
+  //                   cy.contains('.text-xs', title)
+  //                     .parents('.rounded-md')
+  //                     .should('have.descendants', '.pointRight')
+  //                     .click()
+  //                 });
+  //             });
+  //             cy.contains('button', 'Submit').click();
+  //             cy.contains('Correct!').should('be.visible');
+  //             cy.get('[aria-label="close"]')
+  //               .closest('button')
+  //               .click()
+  //           }
+  //         }
+  //       })
+  //     })
+  //   }
+
+  // })
 
 
   // it('happy case create pronunciation image', () => {
@@ -175,8 +239,8 @@ describe('gen mission', () => {
   //   for (let i = 0; i < countQuestion; i++) {
   //     cy.wait('@generateQuestion', { timeout: 15000 }).then(({ response }) => {
   //       const listQuestions = response.body.data.data;
-  //       idQuestion = questions[0].id;
-  //       indexQuesion = questions[0].index;
+  //       idQuestion = questions[i].id;
+  //       indexQuesion = questions[i].index;
   //       listQuestions.forEach(item => {
   //         if (hasImage(item) && idQuestion === item.id && item.mediaType === "IMAGE") {
   //           // cy.request({
@@ -273,8 +337,8 @@ describe('gen mission', () => {
   //   for (let i = 0; i < countQuestion; i++) {
   //     cy.wait('@generateQuestion', { timeout: 15000 }).then(({ response }) => {
   //       const listQuestions = response.body.data.data;
-  //       idQuestion = questions[0].id;
-  //       indexQuesion = questions[0].index;
+  //       idQuestion = questions[i].id;
+  //       indexQuesion = questions[i].index;
   //       listQuestions.forEach(item => {
   //         if (hasAudio(item) && idQuestion === item.id) {
   //           cy.request({
