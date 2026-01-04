@@ -32,3 +32,15 @@ export function clickPreviewByIndexAndName(index, name) {
         .click()
     })
 }
+
+export function hasAudio (item) {
+    return item.audio !== null;
+}
+
+export function hasImage (item) {
+    return item.image !== null;
+}
+
+export function hasPair (item) {
+    return item.pairs !== null;
+}
