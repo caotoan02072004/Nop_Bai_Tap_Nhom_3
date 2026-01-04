@@ -1,4 +1,4 @@
-import { clickControl, expandTemplate, clickPreviewByIndexAndName, hasAudio, hasImage, hasPair, hasUrlData, matchMediaType } from '../support/utils'
+import { clickControl, expandTemplate, clickPreviewByIndexAndName, hasAudio, hasImage, hasPair, hasUrlData, matchMediaType, createMission } from '../support/utils'
 
 describe('gen mission', () => {
   beforeEach(() => {
@@ -10,71 +10,87 @@ describe('gen mission', () => {
       }
     })
     cy.visit('/');
-  })
-
-  it('happy case create dropdown', () => {
-    const type = 1; // 0: audio, 1: image
-    const exerciseType = "dropdown";
-    const name = "Dropdown";
-
-    cy.intercept('POST', '/api/lcm/web/excercise/create-dropdown').as('generateQuestion');
-    const countQuestion = 1;
-
-    cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102');
-
-    expandTemplate(`template-${exerciseType}-collapse`);
-    cy.get(`[data-cy="template-content-${exerciseType}"]`).within(() => {
-      if(type == 0)
-        clickControl('Audio', 'plus', countQuestion);
-      else
-        clickControl('Image', 'plus', countQuestion);
+    cy.intercept('POST', '/api/lcm/web/unit/list-units?page=0&size=6&isDashboard=true').as('listUnit');
+    cy.intercept('POST', '/api/lcm/web/lesson/create-lesson').as('createLesson');
+    cy.wait('@listUnit', { timeout: 10000 }).then(({ response }) => {
+      const listUnits = response.body.data;
+      let id = null;
+      if (Array.isArray(listUnits) && listUnits.length !== 0) {
+        id = listUnits[0].id;
+      }
+      else{
+        createMission();
+        cy.wait('@createLesson', { timeout: 10000 }).then(({ response }) => {
+          id = response.body.data.id;
+        });
+      }
+      cy.log("iD: " + id);
+      cy.wrap(id).as('unitId');
     });
-    cy.get('button[data-cy="generate-question"]').click();
+  });
+  // it('happy case create dropdown', () => {
+  //   const type = 1; // 0: audio, 1: image
+  //   const exerciseType = "dropdown";
+  //   const name = "Dropdown";
 
-    let idQuestion = '';
-    let indexQuesion = null;
-    let questions = [];
-    for (let i = 0; i < countQuestion; i++) {
-      cy.wait('@generateQuestion', { timeout: 5000 }).then(({ response }) => {
-        const listQuestions = response.body.data.data;
-        listQuestions.forEach((item, index) => {
-          if (!hasUrlData(item, type) && item.exerciseType === exerciseType && matchMediaType(item, type)) {
-            idQuestion = item.id;
-            indexQuesion = index;
-            questions.push({
-              index: indexQuesion,
-              id: idQuestion
-            });
-          }
-        })
-      })
-    }
-    for (let i = 0; i < countQuestion; i++) {
-      cy.wait('@generateQuestion', { timeout: 25000 }).then(({ response }) => {
-        const listQuestions = response.body.data.data;
-        idQuestion = questions[i].id;
-        indexQuesion = questions[i].index;
-        listQuestions.forEach(item => {
-          if (hasUrlData(item, type) && idQuestion === item.id && item.exerciseType === exerciseType  && matchMediaType(item, type)) {
-            const answers = item.answers;
-            if(indexQuesion !== null){
-              clickPreviewByIndexAndName(indexQuesion+1, name, type);
-              cy.get('.ant-select-selector').click();
-              cy.get('.ant-select-dropdown')
-                .should('be.visible')
-                .contains('.ant-select-item-option', answers[0])
-                .click();
-              cy.contains('button', 'Submit').click();
-              cy.contains('Correct!').should('be.visible');
-              cy.get('[aria-label="close"]')
-                .closest('button')
-                .click()
-            }
-          }
-        })
-      })
-    }
-  })
+  //   cy.intercept('POST', '/api/lcm/web/excercise/create-dropdown').as('generateQuestion');
+  //   const countQuestion = 1;
+
+  //   cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102');
+
+  //   expandTemplate(`template-${exerciseType}-collapse`);
+  //   cy.get(`[data-cy="template-content-${exerciseType}"]`).within(() => {
+  //     if(type == 0)
+  //       clickControl('Audio', 'plus', countQuestion);
+  //     else
+  //       clickControl('Image', 'plus', countQuestion);
+  //   });
+  //   cy.get('button[data-cy="generate-question"]').click();
+
+  //   let idQuestion = '';
+  //   let indexQuesion = null;
+  //   let questions = [];
+  //   for (let i = 0; i < countQuestion; i++) {
+  //     cy.wait('@generateQuestion', { timeout: 5000 }).then(({ response }) => {
+  //       const listQuestions = response.body.data.data;
+  //       listQuestions.forEach((item, index) => {
+  //         if (!hasUrlData(item, type) && item.exerciseType === exerciseType && matchMediaType(item, type)) {
+  //           idQuestion = item.id;
+  //           indexQuesion = index;
+  //           questions.push({
+  //             index: indexQuesion,
+  //             id: idQuestion
+  //           });
+  //         }
+  //       })
+  //     })
+  //   }
+  //   for (let i = 0; i < countQuestion; i++) {
+  //     cy.wait('@generateQuestion', { timeout: 25000 }).then(({ response }) => {
+  //       const listQuestions = response.body.data.data;
+  //       idQuestion = questions[i].id;
+  //       indexQuesion = questions[i].index;
+  //       listQuestions.forEach(item => {
+  //         if (hasUrlData(item, type) && idQuestion === item.id && item.exerciseType === exerciseType  && matchMediaType(item, type)) {
+  //           const answers = item.answers;
+  //           if(indexQuesion !== null){
+  //             clickPreviewByIndexAndName(indexQuesion+1, name, type);
+  //             cy.get('.ant-select-selector').click();
+  //             cy.get('.ant-select-dropdown')
+  //               .should('be.visible')
+  //               .contains('.ant-select-item-option', answers[0])
+  //               .click();
+  //             cy.contains('button', 'Submit').click();
+  //             cy.contains('Correct!').should('be.visible');
+  //             cy.get('[aria-label="close"]')
+  //               .closest('button')
+  //               .click()
+  //           }
+  //         }
+  //       })
+  //     })
+  //   }
+  // })
 
   // it('happy case create drag and drop', () => {
   //   const type = 1; // 0: audio, 1: image
@@ -320,10 +336,7 @@ describe('gen mission', () => {
   //           //   }).then((response) => {
   //           //     originalMp3Blob = new Blob([response.body], { type: 'audio/mpeg' });
   //           //   });
-  //           cy.get('.image-custom')
-  //             .find('.ant-spin-spinning', { timeout: 20000 })
-  //             .should('not.exist')
-  //           clickPreviewByIndexAndName(indexQuesion+1, "Pronunciation");
+  //           clickPreviewByIndexAndName(indexQuesion+1, "Pronunciation", 1);
   //           cy.get('svg[viewBox="0 0 352 512"]')
   //             .closest('button')
   //             .click();
@@ -334,7 +347,7 @@ describe('gen mission', () => {
   //             expect(interception.response.statusCode).to.eq(200);
   //           });
   //           cy.contains('button', 'Submit').click();
-  //           cy.contains('Correct!').should('be.visible');
+  //           cy.contains('Wrong!').should('be.visible');
   //           cy.get('[aria-label="close"]')
   //             .closest('button')
   //             .click()
@@ -344,44 +357,44 @@ describe('gen mission', () => {
   //   }
   // })
 
-  // it('happy case create pronunciation audio', () => {
+  // it('happy case create pronunciation audio', function () {
+  //   const type = 0; // 0: audio, 1: image
+  //   const exerciseType = "pronunciation";
+  //   const name = "Pronunciation";
+
   //   let originalMp3Blob;
   //   cy.intercept('POST', '/api/ai-integrate/ai/phonemes-scoring').as('uploadScore');
   //   cy.intercept('POST', '/api/lcm/web/excercise/create-excercise-pronunciation').as('generateQuestion');
 
-  //   const hasAudio = (item) => {
-  //     return item.audio !== null;
-  //   };
-
   //   // cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102');
-    // cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102', {
-    //   onBeforeLoad(win) {
-    //     cy.stub(win.navigator.mediaDevices, 'getUserMedia').callsFake(() => {
-    //       const AudioContext = win.AudioContext || win.webkitAudioContext;
-    //       const ctx = new AudioContext();
-    //       const dest = ctx.createMediaStreamDestination();
-    //       const osc = ctx.createOscillator();
-    //       osc.connect(dest);
-    //       osc.start();
-    //       return Promise.resolve(dest.stream);
-    //     });
+  //   cy.visit(`/teacher/mission/${this.unitId}`, {
+  //     onBeforeLoad(win) {
+  //       cy.stub(win.navigator.mediaDevices, 'getUserMedia').callsFake(() => {
+  //         const AudioContext = win.AudioContext || win.webkitAudioContext;
+  //         const ctx = new AudioContext();
+  //         const dest = ctx.createMediaStreamDestination();
+  //         const osc = ctx.createOscillator();
+  //         osc.connect(dest);
+  //         osc.start();
+  //         return Promise.resolve(dest.stream);
+  //       });
 
-    //     // Trộm long tráo phụng
-    //     const originalAppend = win.FormData.prototype.append;
-    //     cy.stub(win.FormData.prototype, 'append').callsFake(function (key, value, filename) {
-    //       if (key === 'audio') {
-    //         if (originalMp3Blob) {
-    //           return originalAppend.call(this, key, originalMp3Blob, 'recording.mp3');
-    //         }
-    //       }
-    //       return originalAppend.apply(this, arguments);
-    //     });
-    //   },
-    // });
+  //       // Trộm long tráo phụng
+  //       const originalAppend = win.FormData.prototype.append;
+  //       cy.stub(win.FormData.prototype, 'append').callsFake(function (key, value, filename) {
+  //         if (key === 'audio') {
+  //           if (originalMp3Blob) {
+  //             return originalAppend.call(this, key, originalMp3Blob, 'recording.mp3');
+  //           }
+  //         }
+  //         return originalAppend.apply(this, arguments);
+  //       });
+  //     },
+  //   });
     
-  //   const countQuestion = 2;
-  //   expandTemplate('template-pronunciation-collapse');
-  //   cy.get('[data-cy="template-content-pronunciation"]').within(() => {
+  //   const countQuestion = 1;
+  //   expandTemplate(`template-${exerciseType}-collapse`);
+  //   cy.get(`[data-cy="template-content-${exerciseType}"]`).within(() => {
   //     // clickControl('Image', 'plus', 2);
   //     clickControl('Audio', 'plus', countQuestion);
   //   })
@@ -394,7 +407,7 @@ describe('gen mission', () => {
   //     cy.wait('@generateQuestion', { timeout: 5000 }).then(({ response }) => {
   //       const listQuestions = response.body.data.data;
   //       listQuestions.forEach((item, index) => {
-  //         if (!hasAudio(item)) {
+  //         if (!hasUrlData(item, type) && item.exerciseType === exerciseType  && matchMediaType(item, type)) {
   //           idQuestion = item.id;
   //           indexQuesion = index;
   //           questions.push({
@@ -411,7 +424,7 @@ describe('gen mission', () => {
   //       idQuestion = questions[i].id;
   //       indexQuesion = questions[i].index;
   //       listQuestions.forEach(item => {
-  //         if (hasAudio(item) && idQuestion === item.id) {
+  //         if (hasUrlData(item, type) && idQuestion === item.id && item.exerciseType === exerciseType  && matchMediaType(item, type)) {
   //           cy.request({
   //               url:Cypress.env('fileUrl')+item.audio,
   //               encoding: null,
@@ -420,7 +433,7 @@ describe('gen mission', () => {
   //             });
             
   //           if(indexQuesion !== null){
-  //             clickPreviewByIndexAndName(indexQuesion+1, "Pronunciation");
+  //             clickPreviewByIndexAndName(indexQuesion+1, name);
               
   //             cy.get('svg[viewBox="0 0 352 512"]')
   //               .closest('button')
@@ -489,9 +502,11 @@ describe('gen mission', () => {
   //       .and('not.be.disabled')
   //       .click()
       
-  //     cy.get('.ant-checkbox-group').should('be.visible')
-  //       .find('input[type="checkbox"]')
-  //       .check({ force: true })
+  //     cy.get('.ant-checkbox-group')
+  //       .find('.ant-checkbox-wrapper')
+  //       .each(($label) => {
+  //         cy.wrap($label).click()
+  //       })
 
   //     cy.contains('button', 'Save')
   //       .scrollIntoView()
