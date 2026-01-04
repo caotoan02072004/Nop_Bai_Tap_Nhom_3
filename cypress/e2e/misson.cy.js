@@ -1,4 +1,4 @@
-import { clickControl, expandTemplate, clickPreviewByIndexAndName, hasAudio, hasImage, hasPair } from '../support/utils'
+import { clickControl, expandTemplate, clickPreviewByIndexAndName, hasAudio, hasImage, hasPair, hasUrlData, matchMediaType } from '../support/utils'
 
 describe('gen mission', () => {
   beforeEach(() => {
@@ -13,6 +13,10 @@ describe('gen mission', () => {
   })
 
   it('happy case create matching pairs audio-text', () => {
+    const type = 1; // 0: audio, 1: image
+    const exerciseType = "drag_and_drop";
+    const name = "Drag and drop";
+
     cy.intercept('POST', '/api/lcm/web/excercise/create-drag-and-drop').as('generateQuestion');
     const countQuestion = 1;
 
@@ -20,7 +24,10 @@ describe('gen mission', () => {
 
     expandTemplate('template-drag_and_drop-collapse');
     cy.get('[data-cy="template-content-drag_and_drop"]').within(() => {
-      clickControl('Audio', 'plus', countQuestion);
+      if(type == 0)
+        clickControl('Audio', 'plus', countQuestion);
+      else
+        clickControl('Image', 'plus', countQuestion);
     });
     cy.get('button[data-cy="generate-question"]').click();
 
@@ -31,7 +38,7 @@ describe('gen mission', () => {
       cy.wait('@generateQuestion', { timeout: 5000 }).then(({ response }) => {
         const listQuestions = response.body.data.data;
         listQuestions.forEach((item, index) => {
-          if (!hasAudio(item) && item.exerciseType === "drag_and_drop" && item.mediaType === "AUDIO") {
+          if (!hasUrlData(item, type) && item.exerciseType === exerciseType && matchMediaType(item, type)) {
             idQuestion = item.id;
             indexQuesion = index;
             questions.push({
@@ -48,10 +55,10 @@ describe('gen mission', () => {
         idQuestion = questions[i].id;
         indexQuesion = questions[i].index;
         listQuestions.forEach(item => {
-          if (hasAudio(item) && idQuestion === item.id && item.exerciseType === "drag_and_drop"  && item.mediaType === "AUDIO") {
+          if (hasUrlData(item, type) && idQuestion === item.id && item.exerciseType === exerciseType  && matchMediaType(item, type)) {
             const answers = item.answers;
             if(indexQuesion !== null){
-              clickPreviewByIndexAndName(indexQuesion+1, "Drag and drop");
+              clickPreviewByIndexAndName(indexQuesion+1, name, type);
               answers.forEach((text, index) => {
                 cy.contains('[data-option-index]', text)
                   .should('be.visible')
