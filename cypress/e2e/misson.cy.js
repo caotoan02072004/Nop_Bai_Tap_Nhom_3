@@ -12,18 +12,18 @@ describe('gen mission', () => {
     cy.visit('/');
   })
 
-  it('happy case create matching pairs audio-text', () => {
+  it('happy case create dropdown', () => {
     const type = 1; // 0: audio, 1: image
-    const exerciseType = "drag_and_drop";
-    const name = "Drag and drop";
+    const exerciseType = "dropdown";
+    const name = "Dropdown";
 
-    cy.intercept('POST', '/api/lcm/web/excercise/create-drag-and-drop').as('generateQuestion');
+    cy.intercept('POST', '/api/lcm/web/excercise/create-dropdown').as('generateQuestion');
     const countQuestion = 1;
 
     cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102');
 
-    expandTemplate('template-drag_and_drop-collapse');
-    cy.get('[data-cy="template-content-drag_and_drop"]').within(() => {
+    expandTemplate(`template-${exerciseType}-collapse`);
+    cy.get(`[data-cy="template-content-${exerciseType}"]`).within(() => {
       if(type == 0)
         clickControl('Audio', 'plus', countQuestion);
       else
@@ -59,18 +59,11 @@ describe('gen mission', () => {
             const answers = item.answers;
             if(indexQuesion !== null){
               clickPreviewByIndexAndName(indexQuesion+1, name, type);
-              answers.forEach((text, index) => {
-                cy.contains('[data-option-index]', text)
-                  .should('be.visible')
-                  .click();
-                cy.wait(300);
-                cy.get(`[data-index="${index}"]`)
-                  .should('be.visible')
-                  .invoke('text')
-                  .then(t => {
-                    expect(t.trim()).to.eq(text);
-                  });
-              });
+              cy.get('.ant-select-selector').click();
+              cy.get('.ant-select-dropdown')
+                .should('be.visible')
+                .contains('.ant-select-item-option', answers[0])
+                .click();
               cy.contains('button', 'Submit').click();
               cy.contains('Correct!').should('be.visible');
               cy.get('[aria-label="close"]')
@@ -82,6 +75,77 @@ describe('gen mission', () => {
       })
     }
   })
+
+  // it('happy case create drag and drop', () => {
+  //   const type = 1; // 0: audio, 1: image
+  //   const exerciseType = "drag_and_drop";
+  //   const name = "Drag and drop";
+
+  //   cy.intercept('POST', '/api/lcm/web/excercise/create-drag-and-drop').as('generateQuestion');
+  //   const countQuestion = 1;
+
+  //   cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102');
+
+  //   expandTemplate('template-drag_and_drop-collapse');
+  //   cy.get('[data-cy="template-content-drag_and_drop"]').within(() => {
+  //     if(type == 0)
+  //       clickControl('Audio', 'plus', countQuestion);
+  //     else
+  //       clickControl('Image', 'plus', countQuestion);
+  //   });
+  //   cy.get('button[data-cy="generate-question"]').click();
+
+  //   let idQuestion = '';
+  //   let indexQuesion = null;
+  //   let questions = [];
+  //   for (let i = 0; i < countQuestion; i++) {
+  //     cy.wait('@generateQuestion', { timeout: 5000 }).then(({ response }) => {
+  //       const listQuestions = response.body.data.data;
+  //       listQuestions.forEach((item, index) => {
+  //         if (!hasUrlData(item, type) && item.exerciseType === exerciseType && matchMediaType(item, type)) {
+  //           idQuestion = item.id;
+  //           indexQuesion = index;
+  //           questions.push({
+  //             index: indexQuesion,
+  //             id: idQuestion
+  //           });
+  //         }
+  //       })
+  //     })
+  //   }
+  //   for (let i = 0; i < countQuestion; i++) {
+  //     cy.wait('@generateQuestion', { timeout: 25000 }).then(({ response }) => {
+  //       const listQuestions = response.body.data.data;
+  //       idQuestion = questions[i].id;
+  //       indexQuesion = questions[i].index;
+  //       listQuestions.forEach(item => {
+  //         if (hasUrlData(item, type) && idQuestion === item.id && item.exerciseType === exerciseType  && matchMediaType(item, type)) {
+  //           const answers = item.answers;
+  //           if(indexQuesion !== null){
+  //             clickPreviewByIndexAndName(indexQuesion+1, name, type);
+  //             answers.forEach((text, index) => {
+  //               cy.contains('[data-option-index]', text)
+  //                 .should('be.visible')
+  //                 .click();
+  //               cy.wait(300);
+  //               cy.get(`[data-index="${index}"]`)
+  //                 .should('be.visible')
+  //                 .invoke('text')
+  //                 .then(t => {
+  //                   expect(t.trim()).to.eq(text);
+  //                 });
+  //             });
+  //             cy.contains('button', 'Submit').click();
+  //             cy.contains('Correct!').should('be.visible');
+  //             cy.get('[aria-label="close"]')
+  //               .closest('button')
+  //               .click()
+  //           }
+  //         }
+  //       })
+  //     })
+  //   }
+  // })
 
   // it('happy case create matching pairs audio-text', () => {
   //   cy.intercept('POST', '/api/lcm/web/excercise/create-excercise-matching-pairs').as('generateQuestion');

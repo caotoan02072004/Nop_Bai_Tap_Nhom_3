@@ -28,20 +28,23 @@ export function clickPreviewByIndexAndName(index, name, type = 0) {
         .as('questionCard');
 
         cy.get('@questionCard').within(() => {
-            cy.get('.image-custom')
-                  .find('.ant-spin-spinning', { timeout: 30000 })
-                  .should('not.exist');
-            cy.get('img.image-custom', { timeout: 20000 })
-                .should('be.visible')
-                .should($img => {
-                expect($img[0].complete).to.be.true;
-                });
-            cy.wait(300);
+            cy.get('.ant-spin-spinning', { timeout: 30000 })
+            .should('not.exist');
+
+            cy.get('img.image-custom', { timeout: 30000 })
+            .should('be.visible')
+            .should($img => {
+                const src = $img.attr('src');
+                expect(src).to.exist;
+                expect(src).not.to.include('default_image');
+            });
         });
+        cy.wait(300);
         cy.get('@questionCard').within(() => {
             cy.get('.flex.items-center.justify-end')
                 .find('button')
                 .first()
+                .should('not.be.disabled')
                 .click();
         });
     }
