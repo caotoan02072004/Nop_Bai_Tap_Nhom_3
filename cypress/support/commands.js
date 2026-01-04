@@ -113,3 +113,29 @@ Cypress.Commands.add("fillInput", (selector, value) => {
 Cypress.Commands.add("selectAntdOption", (label) => {
   cy.contains(".ant-select-item-option", new RegExp(`^${label}$`)).click();
 });
+
+Cypress.Commands.add('loginByApi', () => {
+  cy.request({
+    method: 'POST',
+    url: 'https://beta.cheppy.ai/api/security/authenticate',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    form: true,
+    body: {
+        grant_type: Cypress.env('grant_type'),
+        client_id: Cypress.env('client_id'),
+        username: Cypress.env('username'),
+        password: Cypress.env('password'),
+        rememberDevice: false
+    }
+
+  }).then((res) => {
+    cy.log('Login successful, token received')
+    cy.visit('https://beta.cheppy.ai')
+    cy.window().then((win) => {
+        cy.setCookie('access-token', res.body.access_token)
+        cy.setCookie('refresh-token', res.body.refresh_token)
+    })
+  })
+})
