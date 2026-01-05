@@ -24,3 +24,8 @@ pnpm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+#output
+cypress/reports
+cypress/screenshots
+cypress/debug

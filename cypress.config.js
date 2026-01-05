@@ -2,6 +2,14 @@ const { defineConfig } = require("cypress");
 require('dotenv').config();
 
 module.exports = defineConfig({
+  reporter: 'mochawesome',
+  reporterOptions: {
+  reportDir: 'cypress/reports/mochawesome',
+  overwrite: false,
+  html: false,
+  json: true,
+  timestamp: 'mmddyyyy_HHMMss'
+  },
   e2e: {
     viewportWidth: 1920,
     viewportHeight: 1080,

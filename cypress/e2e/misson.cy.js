@@ -1,6 +1,68 @@
 import { clickControl, expandTemplate, clickPreviewByIndexAndName, hasAudio, hasImage, hasPair, hasUrlData, matchMediaType, createMission } from '../support/utils'
 
-describe('gen mission', () => {
+describe('create mission', () => { 
+  it('create mission with grade', () => {
+    cy.fixture('mission').then((data) => {
+      cy.visit('/teacher/mission/create')
+      
+      cy.get('.ant-select[name="gradeId"]').click()
+
+      // chọn Grade
+      cy.get('body')
+        .find('.ant-select-dropdown')
+        .contains('.ant-select-item-option', data.grade)
+        .click()
+
+      // verify
+      cy.get('.ant-select[name="gradeId"]')
+        .contains(data.grade)
+      
+      cy.get('input[name="topic"]').type(data.topic).click()
+      cy.contains('button', 'Apply')
+        .should('be.visible')
+        .click()
+      // cy.wait(2000)
+      // cy.debug()
+      // data.vocab.forEach(word => {
+      //   cy.get('input[placeholder="Add vocabulary"]')
+      //     .click()
+      //     .type(`${word}{enter}`)
+      // })
+      cy.get('input[placeholder^="Enter grammar elements"]')
+            .should('be.visible')
+            .click()
+            .type('pre')
+      // cy.wait(2000)
+      // cy.debug()
+      cy.contains('div', 'Present Tense')
+        .should('be.visible')
+        .click()
+      cy.contains('button', 'Apply')
+        .should('be.visible')
+        .click()
+      
+      cy.contains('button', 'Continue')
+        .scrollIntoView()
+        .should('be.visible')
+        .and('not.be.disabled')
+        .click()
+      
+      cy.get('.ant-checkbox-group')
+        .find('.ant-checkbox-wrapper')
+        .each(($label) => {
+          cy.wrap($label).click()
+        })
+
+      cy.contains('button', 'Save')
+        .scrollIntoView()
+        .should('be.visible')
+        .and('not.be.disabled')
+        .click()
+    })
+  })
+});
+
+describe('create lesson', () => {
   beforeEach(() => {
     cy.session('user-session', () => {
       cy.loginByApi();
@@ -362,6 +424,7 @@ describe('gen mission', () => {
     const type = 0; // 0: audio, 1: image
     const exerciseType = "pronunciation";
     const name = "Pronunciation";
+    const countQuestion = 1;
 
     let originalMp3Blob;
     cy.intercept('POST', '/api/ai-integrate/ai/phonemes-scoring').as('uploadScore');
@@ -393,7 +456,6 @@ describe('gen mission', () => {
       },
     });
     
-    const countQuestion = 1;
     expandTemplate(`template-${exerciseType}-collapse`);
     cy.get(`[data-cy="template-content-${exerciseType}"]`).within(() => {
       // clickControl('Image', 'plus', 2);
@@ -455,65 +517,5 @@ describe('gen mission', () => {
         })
       })
     }
-  })
-
-  it('create mission with grade', () => {
-    cy.fixture('mission').then((data) => {
-      cy.visit('/teacher/mission/create')
-      
-      cy.get('.ant-select[name="gradeId"]').click()
-
-      // chọn Grade
-      cy.get('body')
-        .find('.ant-select-dropdown')
-        .contains('.ant-select-item-option', data.grade)
-        .click()
-
-      // verify
-      cy.get('.ant-select[name="gradeId"]')
-        .contains(data.grade)
-      
-      cy.get('input[name="topic"]').type(data.topic).click()
-      cy.contains('button', 'Apply')
-        .should('be.visible')
-        .click()
-      // cy.wait(2000)
-      // cy.debug()
-      // data.vocab.forEach(word => {
-      //   cy.get('input[placeholder="Add vocabulary"]')
-      //     .click()
-      //     .type(`${word}{enter}`)
-      // })
-      cy.get('input[placeholder^="Enter grammar elements"]')
-            .should('be.visible')
-            .click()
-            .type('pre')
-      // cy.wait(2000)
-      // cy.debug()
-      cy.contains('div', 'Present Tense')
-        .should('be.visible')
-        .click()
-      cy.contains('button', 'Apply')
-        .should('be.visible')
-        .click()
-      
-      cy.contains('button', 'Continue')
-        .scrollIntoView()
-        .should('be.visible')
-        .and('not.be.disabled')
-        .click()
-      
-      cy.get('.ant-checkbox-group')
-        .find('.ant-checkbox-wrapper')
-        .each(($label) => {
-          cy.wrap($label).click()
-        })
-
-      cy.contains('button', 'Save')
-        .scrollIntoView()
-        .should('be.visible')
-        .and('not.be.disabled')
-        .click()
-    })
   })
 })
