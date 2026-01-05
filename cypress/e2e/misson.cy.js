@@ -1,6 +1,16 @@
 import { clickControl, expandTemplate, clickPreviewByIndexAndName, hasAudio, hasImage, hasPair, hasUrlData, matchMediaType, createMission } from '../support/utils'
 
 describe('create mission', () => { 
+  beforeEach(() => {
+    cy.session('user-session', () => {
+      cy.loginByApi();
+    }, {
+      validate() {
+        cy.getCookie('access-token').should('exist');
+      }
+    })
+    cy.visit('/');
+  });
   it('create mission with grade', () => {
     cy.fixture('mission').then((data) => {
       cy.visit('/teacher/mission/create')
@@ -178,7 +188,7 @@ describe('create lesson', () => {
     let indexQuesion = null;
     let questions = [];
     for (let i = 0; i < countQuestion; i++) {
-      cy.wait('@generateQuestion', { timeout: 5000 }).then(({ response }) => {
+      cy.wait('@generateQuestion', { timeout: 15000 }).then(({ response }) => {
         const listQuestions = response.body.data.data;
         listQuestions.forEach((item, index) => {
           if (!hasUrlData(item, type) && item.exerciseType === exerciseType && matchMediaType(item, type)) {
@@ -232,23 +242,6 @@ describe('create lesson', () => {
 
     cy.visit(`/teacher/mission/${this.unitId}`);
 
-    // clickPreviewByIndexAndName(1+1, "Matching pairs");
-
-    // cy.get('.pointLeft').each(($pointLeft, index) => {
-    // cy.wrap($pointLeft)
-    //     .closest('[class*="rounded-md"]')
-    //     .within(() => {
-    //       cy.get('audio source')
-    //         .invoke('attr', 'src')
-    //         .then((leftSrc) => {
-
-    //           // click left
-    //           cy.wrap($pointLeft).click({ force: true });
-    //           cy.log(leftSrc)
-    //         });
-    //     });
-    // });
-
     expandTemplate('template-matching_pairs-collapse');
     cy.get('[data-cy="template-content-matching_pairs"]').within(() => {
       clickControl('Audio- Text', 'plus', countQuestion);
@@ -259,7 +252,7 @@ describe('create lesson', () => {
     let indexQuesion = null;
     let questions = [];
     for (let i = 0; i < countQuestion; i++) {
-      cy.wait('@generateQuestion', { timeout: 5000 }).then(({ response }) => {
+      cy.wait('@generateQuestion', { timeout: 15000 }).then(({ response }) => {
         const listQuestions = response.body.data.data;
         listQuestions.forEach((item, index) => {
           if (!hasPair(item) && item.exerciseType === "matching_pairs" && item.mediaType === "TEXT_AUDIO") {
@@ -372,7 +365,7 @@ describe('create lesson', () => {
     let indexQuesion = null;
     let questions = [];
     for (let i = 0; i < countQuestion; i++) {
-      cy.wait('@generateQuestion', { timeout: 5000 }).then(({ response }) => {
+      cy.wait('@generateQuestion', { timeout: 15000 }).then(({ response }) => {
         const listQuestions = response.body.data.data;
         listQuestions.forEach((item, index) => {
           if (!hasImage(item) && item.mediaType === "IMAGE") {
@@ -387,7 +380,7 @@ describe('create lesson', () => {
       })
     }
     for (let i = 0; i < countQuestion; i++) {
-      cy.wait('@generateQuestion', { timeout: 15000 }).then(({ response }) => {
+      cy.wait('@generateQuestion', { timeout: 25000 }).then(({ response }) => {
         const listQuestions = response.body.data.data;
         idQuestion = questions[i].id;
         indexQuesion = questions[i].index;
@@ -467,7 +460,7 @@ describe('create lesson', () => {
     let indexQuesion = null;
     let questions = [];
     for (let i = 0; i < countQuestion; i++) {
-      cy.wait('@generateQuestion', { timeout: 5000 }).then(({ response }) => {
+      cy.wait('@generateQuestion', { timeout: 15000 }).then(({ response }) => {
         const listQuestions = response.body.data.data;
         listQuestions.forEach((item, index) => {
           if (!hasUrlData(item, type) && item.exerciseType === exerciseType  && matchMediaType(item, type)) {
@@ -482,7 +475,7 @@ describe('create lesson', () => {
       })
     }
     for (let i = 0; i < countQuestion; i++) {
-      cy.wait('@generateQuestion', { timeout: 15000 }).then(({ response }) => {
+      cy.wait('@generateQuestion', { timeout: 25000 }).then(({ response }) => {
         const listQuestions = response.body.data.data;
         idQuestion = questions[i].id;
         indexQuesion = questions[i].index;

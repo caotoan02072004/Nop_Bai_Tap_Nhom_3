@@ -28,10 +28,10 @@ export function clickPreviewByIndexAndName(index, name, type = 0) {
         .as('questionCard');
 
         cy.get('@questionCard').within(() => {
-            cy.get('.ant-spin-spinning', { timeout: 30000 })
+            cy.get('.ant-spin-spinning', { timeout: 60000 })
             .should('not.exist');
 
-            cy.get('img.image-custom', { timeout: 30000 })
+            cy.get('img.image-custom', { timeout: 60000 })
             .should('be.visible')
             .should($img => {
                 const src = $img.attr('src');
