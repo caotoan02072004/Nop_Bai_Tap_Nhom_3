@@ -33,7 +33,6 @@ export function clickPreviewByIndexAndName(index, name) {
     })
 }
 
-
 export function saveApiResponseToFile(alias, fileName) {
   cy.wait(alias).then(({ request, response }) => {
     expect(response).to.exist;
@@ -50,4 +49,16 @@ export function saveApiResponseToFile(alias, fileName) {
       log: true,
     });
   });
+}
+
+export function hasAudio(item) {
+  return item.audio !== null && item.audio !== '';
+}
+
+export function hasImage(item) {
+  return item.image !== null && item.image !== '';
+}
+
+export function hasPair(item) {
+  return item.pairs !== null;
 }
