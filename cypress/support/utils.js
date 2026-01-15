@@ -39,7 +39,7 @@ export function clickPreviewByIndexAndName(index, name, type = 0) {
                 expect(src).not.to.include('default_image');
             });
         });
-        cy.wait(300);
+        cy.wait(500);
         cy.get('@questionCard').within(() => {
             cy.get('.flex.items-center.justify-end')
                 .find('button')

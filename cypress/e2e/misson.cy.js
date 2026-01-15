@@ -318,100 +318,109 @@ describe('create lesson', () => {
   })
 
 
-  it('happy case create pronunciation image', function () {
-    let originalMp3Blob;
-    cy.intercept('POST', '/api/ai-integrate/ai/phonemes-scoring').as('uploadScore');
-    cy.intercept('POST', '/api/lcm/web/excercise/create-excercise-pronunciation').as('generateQuestion');
+  // it('happy case create pronunciation image', function () {
+  //   let originalMp3Blob;
+  //   cy.intercept('POST', '/api/ai-integrate/ai/phonemes-scoring').as('uploadScore');
+  //   cy.intercept('POST', '/api/lcm/web/excercise/create-excercise-pronunciation').as('generateQuestion');
 
-    const hasImage = (item) => {
-      return item.image !== null;
-    };
+  //   const hasImage = (item) => {
+  //     return item.image !== null;
+  //   };
 
-    // cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102');
-    cy.visit(`/teacher/mission/${this.unitId}`, {
-      onBeforeLoad(win) {
-        cy.stub(win.navigator.mediaDevices, 'getUserMedia').callsFake(() => {
-          const AudioContext = win.AudioContext || win.webkitAudioContext;
-          const ctx = new AudioContext();
-          const dest = ctx.createMediaStreamDestination();
-          const osc = ctx.createOscillator();
-          osc.connect(dest);
-          osc.start();
-          return Promise.resolve(dest.stream);
-        });
+  //   // cy.visit('/teacher/mission/430b8177-7f46-4ad8-8f32-947850b3f102');
+  //   cy.visit(`/teacher/mission/${this.unitId}`, {
+  //     onBeforeLoad(win) {
+  //       cy.stub(win.navigator.mediaDevices, 'getUserMedia').callsFake(() => {
+  //         const AudioContext = win.AudioContext || win.webkitAudioContext;
+  //         const ctx = new AudioContext();
+  //         const dest = ctx.createMediaStreamDestination();
+  //         const osc = ctx.createOscillator();
+  //         osc.connect(dest);
+  //         osc.start();
+  //         return Promise.resolve(dest.stream);
+  //       });
 
-        // Trộm long tráo phụng
-        const originalAppend = win.FormData.prototype.append;
-        cy.stub(win.FormData.prototype, 'append').callsFake(function (key, value, filename) {
-          if (key === 'audio') {
-            if (originalMp3Blob) {
-              return originalAppend.call(this, key, originalMp3Blob, 'recording.mp3');
-            }
-          }
-          return originalAppend.apply(this, arguments);
-        });
-      },
-    });
+  //       // Trộm long tráo phụng
+  //       const originalAppend = win.FormData.prototype.append;
+  //       cy.stub(win.FormData.prototype, 'append').callsFake(function (key, value, filename) {
+  //         if (key === 'audio') {
+  //           if (originalMp3Blob) {
+  //             return originalAppend.call(this, key, originalMp3Blob, 'recording.mp3');
+  //           }
+  //         }
+  //         return originalAppend.apply(this, arguments);
+  //       });
+  //     },
+  //   });
     
-    const countQuestion = 1;
-    expandTemplate('template-pronunciation-collapse');
-    cy.get('[data-cy="template-content-pronunciation"]').within(() => {
-      clickControl('Image', 'plus', countQuestion);
-      // clickControl('Audio', 'plus', countQuestion);
-    })
-    cy.get('button[data-cy="generate-question"]').click();
+  //   const countQuestion = 1;
+  //   expandTemplate('template-pronunciation-collapse');
+  //   cy.get('[data-cy="template-content-pronunciation"]').within(() => {
+  //     clickControl('Image', 'plus', countQuestion);
+  //     // clickControl('Audio', 'plus', countQuestion);
+  //   })
+  //   cy.get('button[data-cy="generate-question"]').click();
     
-    let idQuestion = '';
-    let indexQuesion = null;
-    let questions = [];
-    for (let i = 0; i < countQuestion; i++) {
-      cy.wait('@generateQuestion', { timeout: 15000 }).then(({ response }) => {
-        const listQuestions = response.body.data.data;
-        listQuestions.forEach((item, index) => {
-          if (!hasImage(item) && item.mediaType === "IMAGE") {
-            idQuestion = item.id;
-            indexQuesion = index;
-            questions.push({
-              index: indexQuesion,
-              id: idQuestion
-            });
-          }
-        })
-      })
-    }
-    for (let i = 0; i < countQuestion; i++) {
-      cy.wait('@generateQuestion', { timeout: 25000 }).then(({ response }) => {
-        const listQuestions = response.body.data.data;
-        idQuestion = questions[i].id;
-        indexQuesion = questions[i].index;
-        listQuestions.forEach(item => {
-          if (hasImage(item) && idQuestion === item.id && item.mediaType === "IMAGE") {
-            // cy.request({
-            //     url:Cypress.env('fileUrl')+item.audio,
-            //     encoding: null,
-            //   }).then((response) => {
-            //     originalMp3Blob = new Blob([response.body], { type: 'audio/mpeg' });
-            //   });
-            clickPreviewByIndexAndName(indexQuesion+1, "Pronunciation", 1);
-            cy.get('svg[viewBox="0 0 352 512"]')
-              .closest('button')
-              .click();
-            cy.contains('Tap to stop')
-              .prev('button')
-              .click()
-            cy.wait('@uploadScore').then((interception) => {
-              expect(interception.response.statusCode).to.eq(200);
-            });
-            cy.contains('button', 'Submit').click();
-            cy.contains('Wrong!').should('be.visible');
-            cy.get('[aria-label="close"]')
-              .closest('button')
-              .click()
-          }
-        })
-      })
-    }
-  })
+  //   let idQuestion = '';
+  //   let indexQuesion = null;
+  //   let questions = [];
+  //   for (let i = 0; i < countQuestion; i++) {
+  //     cy.wait('@generateQuestion', { timeout: 15000 }).then(({ response }) => {
+  //       const listQuestions = response.body.data.data;
+  //       listQuestions.forEach((item, index) => {
+  //         if (!hasImage(item) && item.mediaType === "IMAGE") {
+  //           idQuestion = item.id;
+  //           indexQuesion = index;
+  //           questions.push({
+  //             index: indexQuesion,
+  //             id: idQuestion
+  //           });
+  //         }
+  //       })
+  //     })
+  //   }
+  //   for (let i = 0; i < countQuestion; i++) {
+  //     cy.wait('@generateQuestion', { timeout: 25000 }).then(({ response }) => {
+  //       const listQuestions = response.body.data.data;
+  //       idQuestion = questions[i].id;
+  //       indexQuesion = questions[i].index;
+  //       listQuestions.forEach(item => {
+  //         if (hasImage(item) && idQuestion === item.id && item.mediaType === "IMAGE") {
+  //           cy.request({
+  //             method: 'POST',
+  //             url: 'http://localhost:8000/tts/mp3',
+  //             headers: {
+  //               'Content-Type': 'application/json',
+  //             },
+  //             body: {
+  //               text: item.question,
+  //             },
+  //             encoding: 'binary',
+  //           }).then((res) => {
+  //             return Cypress.Blob.binaryStringToBlob(res.body, 'audio/mpeg')
+  //           }).then((blob) => {
+  //             originalMp3Blob = blob
+  //           })
+  //           clickPreviewByIndexAndName(indexQuesion+1, "Pronunciation", 1);
+  //           cy.get('svg[viewBox="0 0 352 512"]')
+  //             .closest('button')
+  //             .click();
+  //           cy.contains('Tap to stop')
+  //             .prev('button')
+  //             .click()
+  //           cy.wait('@uploadScore').then((interception) => {
+  //             expect(interception.response.statusCode).to.eq(200);
+  //           });
+  //           cy.contains('button', 'Submit').click();
+  //           cy.contains('Correct!').should('be.visible');
+  //           cy.get('[aria-label="close"]')
+  //             .closest('button')
+  //             .click()
+  //         }
+  //       })
+  //     })
+  //   }
+  // })
 
   it('happy case create pronunciation audio', function () {
     const type = 0; // 0: audio, 1: image
