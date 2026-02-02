@@ -29,16 +29,23 @@ Cypress.Commands.add('loginByUI', (username, password) => {
   cy.get('[name="password"]').type(password)
   cy.contains('span', 'Sign in').click()
 })
+
 Cypress.Commands.add('loginByApiSession', () => {
+
+  const authUrl = Cypress.env('authenticate');
+  if (!authUrl) {
+    throw new Error('Cypress env "authenticate" is not defined');
+  }
 
   cy.session(
     'user-session',
     () => {
+      cy.log('RUN LOGIN');
       cy.request({
         method: 'POST',
-        url: Cypress.env('authenticate'),
+        url: authUrl,
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
         form: true,
         body: {
@@ -46,28 +53,66 @@ Cypress.Commands.add('loginByApiSession', () => {
           client_id: Cypress.env('client_id'),
           username: Cypress.env('username'),
           password: Cypress.env('password'),
-          rememberDevice: false
-        }
-
+          rememberDevice: false,
+        },
       }).then((res) => {
-        cy.log('Login successful, token received')
-        cy.visit('/')
-        cy.window().then((win) => {
-          cy.setCookie('access-token', res.body.access_token)
-          cy.setCookie('refresh-token', res.body.refresh_token)
-        })
-      })
+        expect(res.status).to.eq(200);
+        expect(res.body).to.have.property('access_token');
+
+        cy.setCookie('access-token', res.body.access_token);
+        cy.setCookie('refresh-token', res.body.refresh_token);
+      });
     },
     {
       validate() {
+        cy.log('VALIDATE');
         cy.getCookie('access-token').should('exist');
       },
     }
   );
 
   cy.visit('/');
+});
 
-})
+// Cypress.Commands.add('loginByApiSession', () => {
+
+//   cy.session(
+//     'user-session',
+//     () => {
+//       cy.request({
+//         method: 'POST',
+//         url: Cypress.env('authenticate'),
+//         headers: {
+//           'Content-Type': 'application/x-www-form-urlencoded'
+//         },
+//         form: true,
+//         body: {
+//           grant_type: Cypress.env('grant_type'),
+//           client_id: Cypress.env('client_id'),
+//           username: Cypress.env('username'),
+//           password: Cypress.env('password'),
+//           rememberDevice: false
+//         }
+
+//       }).then((res) => {
+//         cy.log('Login successful, token received')
+//         cy.visit('/')
+//         cy.window().then((win) => {
+//           cy.setCookie('access-token', res.body.access_token)
+//           cy.setCookie('refresh-token', res.body.refresh_token)
+//         })
+//       })
+//     },
+//     {
+//       validate() {
+//         cy.getCookie('access-token').should('exist');
+//       },
+//     }
+//   );
+
+//   cy.visit('/');
+
+// })
 
 Cypress.Commands.add("selectTemplateTypes", (templateCode, items) => {
   cy.get(`[data-cy="template-${templateCode}-collapse"]`)
@@ -113,3 +158,29 @@ Cypress.Commands.add("fillInput", (selector, value) => {
 Cypress.Commands.add("selectAntdOption", (label) => {
   cy.contains(".ant-select-item-option", new RegExp(`^${label}$`)).click();
 });
+
+Cypress.Commands.add('loginByApi', () => {
+  cy.request({
+    method: 'POST',
+    url: 'https://beta.cheppy.ai/api/security/authenticate',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    form: true,
+    body: {
+      grant_type: Cypress.env('grant_type'),
+      client_id: Cypress.env('client_id'),
+      username: Cypress.env('username'),
+      password: Cypress.env('password'),
+      rememberDevice: false
+    }
+
+  }).then((res) => {
+    cy.log('Login successful, token received')
+    cy.visit('https://beta.cheppy.ai')
+    cy.window().then((win) => {
+      cy.setCookie('access-token', res.body.access_token)
+      cy.setCookie('refresh-token', res.body.refresh_token)
+    })
+  })
+})
