@@ -46,8 +46,8 @@ describe("cb4", { retries: 2 }, () => {
   });
 });
 
-describe.only("cb3", () => {
-  it("Drag/set slider to 55 - verify value + percent", () => {
+describe("cb2", () => {
+  it("cb2", () => {
     cy.visit("https://autotestsandbox.com/examples/range-slider-single");
 
     //
@@ -60,5 +60,14 @@ describe.only("cb3", () => {
     // Verify % giá trị
     const percent = 55;
     expect(percent).to.eq(55);
+  });
+});
+
+describe.only("cb3", () => {
+  // code here
+  it("Test description", () => {
+    // code here
+    cy.get('[data-test-id="lab-075-draw"]').click();
+    cy.get('[data-test-id="lab-075-toggle"]').click();
   });
 });
