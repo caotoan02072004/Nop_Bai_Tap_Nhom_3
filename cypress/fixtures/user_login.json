@@ -1,0 +1,26 @@
+{
+  "reception": {
+    "username": "reception01",
+    "password": "Pass1234"
+  },
+
+  "doctor": {
+    "username": "doctor01",
+    "password": "Pass1234"
+  },
+
+  "labtech": {
+    "username": "labtech01",
+    "password": "Pass1234"
+  },
+
+   "doctor1": {
+    "username": "doctor01",
+    "password": "Pass1234"
+  },
+  
+  "chief": {
+    "username": "chief01",
+    "password": "Pass1234"
+  }
+}

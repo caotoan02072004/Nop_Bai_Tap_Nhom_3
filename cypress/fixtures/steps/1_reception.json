@@ -1,0 +1,11 @@
+{
+  "fullname": "Tom Holland",
+  "birthdate": "2008-08-16",
+  "gender": "Male",
+  "nationalID": "123456789000",
+  "phone": "0972000000",
+  "address": "No 1, 123 Street",
+  "admissionreason": "Uncontrolled hypertension",
+  "triagelevel": "Low",
+  "initial": "Cardiology"
+}
