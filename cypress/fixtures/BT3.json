@@ -1,0 +1,29 @@
+{
+  "accounts": {
+    "reception": "reception01",
+    "doctor": "doctor01",
+    "labtech": "labtech01",
+    "chief": "chief01",
+    "password": "Pass1234"
+  },
+  "patient": {
+    "fullName": "Tom Holland",
+    "dob": "1996-06-01",
+    "gender": "Male",
+    "nationalId": "123456789000",
+    "phone": "0972000000",
+    "address": "No 1, 123 Street",
+    "admissionReason": "Uncontrolled hypertension",
+    "triage": "Low",
+    "initial": "Cardiology"
+  },
+  "verifyCaseDetail": {
+    "caseCode": "CASE-120-0001",
+    "status": "ADMITTED",
+    "doctor": "Dr. Minh",
+    "patientName": "Tom Holland",
+    "dob": "1996-06-01",
+    "triage": "Low",
+    "department": "Cardiology"
+  }
+}
