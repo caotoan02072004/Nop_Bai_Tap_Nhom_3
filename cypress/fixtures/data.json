@@ -1,0 +1,31 @@
+{
+    "accounts": {
+        "reception": {
+            "username": "reception01",
+            "password": "Pass1234"
+        },
+        "doctor": {
+            "username": "doctor01",
+            "password": "Pass1234"
+        },
+        "labTech": {
+            "username": "labtech01",
+            "password": "Pass1234"
+        },
+        "chief": {
+            "username": "chief01",
+            "password": "Pass1234"
+        }
+    },
+    "patientInformation": {
+        "fullName": "Tom Holland",
+        "dateOfBirth": "2008-08-16",
+        "gender": "Male",
+        "nationalId": "123456789000",
+        "phone": "0972000000",
+        "address": "No 1, 123 Street",
+        "admissionReason": "Uncontrolled hypertension",
+        "triageLevel": "Low",
+        "initialDepartment": "Cardiology"
+    }
+}

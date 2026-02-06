@@ -1,0 +1,44 @@
+{
+  "url": "https://dd3a.devlead.top/cskv-ct/danh-muc-dia-ban/yeu-cau-thay-doi-dia-ban",
+  "cases": [
+    {
+      "id": "TK1",
+      "title": "Tìm kiếm rỗng -> trả về danh sách (không crash)",
+      "data": {},
+      "expected": {
+        "type": "any"
+      }
+    },
+    {
+      "id": "TK2",
+      "title": "Tìm theo Họ và tên",
+      "data": {
+        "fullName": "JANE"
+      },
+      "expected": {
+        "type": "any"
+      }
+    },
+    {
+      "id": "TK3",
+      "title": "Tìm theo Số giấy tờ",
+      "data": {
+        "citizenId": "53E43R42376"
+      },
+      "expected": {
+        "type": "any"
+      }
+    },
+    {
+      "id": "TK4",
+      "title": "Tìm nhiều điều kiện",
+      "data": {
+        "citizenId": "GFKJ23434",
+        "fullName": "DESTINY"
+      },
+      "expected": {
+        "type": "any"
+      }
+    }
+  ]
+}
