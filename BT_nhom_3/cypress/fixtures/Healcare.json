@@ -1,0 +1,21 @@
+{
+  
+"patient":{
+"Full name": "Tom Holland",
+  "Date of birth": "16/08/2008",
+  "Gender": "Male",
+"National ID":"123456789000",
+"Phone":"0972000000",
+"Address":"No 1, 123 Street",
+"Admission reason":"Uncontrolled hypertension",
+"Triage level":"Low",
+"Initial department":""
+},
+"Login":{
+"UserReception":"reception01",
+"UserDoctor":"doctor01",
+"UserLabtech":"labtech01",
+"UserChief":"chief01",
+"Password":"Pass1234"
+},
+}
