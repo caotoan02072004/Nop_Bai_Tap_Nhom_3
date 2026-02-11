@@ -1,0 +1,43 @@
+{
+    "validUserReception": {
+        "username": "reception01",
+        "password": "Pass1234"
+    },
+    "validUserDoctor": {
+        "username": "doctor01",
+        "password": "Pass1234"
+    },
+    "validUserLabTech": {
+        "username": "labtech01",
+        "password": "Pass1234"
+    },
+    "validPatient": {
+        "fullName": "Tom Holland",
+        "dateOfBirth": "2008-08-08",
+        "gender": "Male",
+        "nationalID": "123456789000",
+        "phone": "0972000000",
+        "address": "No 1, 123 Street",
+        "admissionReason": "Uncontrolled hypertension",
+        "triageLevel": "Low",
+        "initialDepartment": "Emergency"
+    },
+    "validLabOrders": {
+        "priority": "ROUTINE"
+    },
+    "validLabTech": {
+        "resultStatus": "ABNORMAL",
+        "clinicalNote": "Kết quả bất thường"
+    },
+    "validProtocolUpdate": {
+        "diagnosis": "Acute respiratory infection",
+        "protocolName": "Standard fever Protocol",
+        "medication": "Paracetamol",
+        "Dose": "500mg",
+        "Frequency": "2 daily"
+    },
+    "validStatic": {
+        "tableTitle" : "SKU",
+        "HighlightSKU": "SKU-001"
+    }
+}
