@@ -1,0 +1,27 @@
+{
+  "cases": [
+    {
+      "id": "TC1",
+      "title": "Đăng nhập thành công",
+      "username": "077777777777",
+      "password": "SDevTest@123456",
+      "origin": {
+      "sso": "https://sso-dd-int.devlead.top/auth?client_id=qtud-master&redirect_uri=https%3A%2F%2Fdd3a.devlead.top%2Fxac-thuc",
+      "dd3a": "https://dd3a.devlead.top"},
+      "expected": {
+        "urlIncludes": "dd3a.devlead.top"
+      }
+    },
+    {
+      "id": "Thêm mới",
+      "title": "Thêm mới thành công",
+      "username": "wrongname",
+      "password": "SuperSecretPassword!",
+      "expected": {
+        "urlIncludes": "/login",
+        "message": "Your username is invalid!"
+      }
+    }
+  ]
+      }
+

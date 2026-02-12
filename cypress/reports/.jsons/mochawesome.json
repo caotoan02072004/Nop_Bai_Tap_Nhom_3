@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2025-12-27T02:50:08.356Z",
+    "end": "2025-12-27T02:50:19.575Z",
+    "duration": 11219,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "8d7efbc0-b53c-49ab-9694-621a9f0923d7",
+      "title": "",
+      "fullFile": "cypress\\e2e\\Case 10.cy.js",
+      "file": "cypress\\e2e\\Case 10.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "30606aed-a40e-40fb-8174-78b639794b9e",
+          "title": "Case 10",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Lấy số trong thẻ",
+              "fullTitle": "Case 10 Lấy số trong thẻ",
+              "timedOut": null,
+              "duration": 5970,
+              "state": "passed",
+              "speed": "medium",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.intercept('GET', '**/challenging_dom').as('getDom');\ncy.visit('https://practice.expandtesting.com/challenging-dom');\ncy.get('#canvas').then($canvas => {\n  const canvas = $canvas[0];\n  const context = canvas.getContext('2d');\n  // Đọc dữ liệu ảnh canvas\n  const imageData = context.getImageData(0, 0, canvas.width, canvas.height);\n  // Convert image -> text (đơn giản hóa cho bài học)\n  // Với bài này chỉ cần check canvas có data\n  expect(imageData.data.length).to.be.greaterThan(0);\n});",
+              "err": {},
+              "uuid": "059ac819-da6f-4975-963a-d88b0aeb3704",
+              "parentUUID": "30606aed-a40e-40fb-8174-78b639794b9e",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "059ac819-da6f-4975-963a-d88b0aeb3704"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 5970,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress\\reports\\.jsons",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}
