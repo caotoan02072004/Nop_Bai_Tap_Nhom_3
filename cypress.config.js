@@ -4,17 +4,18 @@ require('dotenv').config();
 module.exports = defineConfig({
   reporter: 'mochawesome',
   reporterOptions: {
-  reportDir: 'cypress/reports/mochawesome',
-  overwrite: false,
-  html: false,
-  json: true,
-  timestamp: 'mmddyyyy_HHMMss'
+    reportDir: 'cypress/reports/mochawesome',
+    overwrite: false,
+    html: false,
+    json: true,
+    timestamp: 'mmddyyyy_HHMMss'
   },
   e2e: {
     viewportWidth: 1920,
     viewportHeight: 1080,
-    baseUrl: 'https://beta.cheppy.ai',
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    // baseUrl: 'https://beta.cheppy.ai',
+    baseUrl: "https://autotestsandbox.com",
+    // userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     env: {
       // Đọc từ .env file
       username: process.env.CHEPPY_USERNAME,

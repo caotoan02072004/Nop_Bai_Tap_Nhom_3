@@ -1,0 +1,54 @@
+[
+    {
+        "id": "CB_1",
+        "urlPath": "/labs/healthcare-multi-stage-treatment",
+        "accounts": {
+            "reception": {
+                "username": "reception01",
+                "password": "Pass1234"
+            },
+            "doctor": {
+                "username": "doctor01",
+                "password": "Pass1234"
+            },
+            "labtech": {
+                "username": "labtech01",
+                "password": "Pass1234"
+            },
+            "chief": {
+                "username": "chief01",
+                "password": "Pass1234"
+            }
+        },
+        "patient": {
+            "fullName": "Tom Holland",
+            "dob": "2008-08-16",
+            "gender": "Male",
+            "nationalId": "123456789000",
+            "phone": "0972000000",
+            "address": "No 1, 123 Street",
+            "admissionReason": "Uncontrolled hypertension",
+            "triageLevel": "Low"
+        },
+        "labOrder": {
+            "testName": "CRP",
+            "priority": "ROUTINE",
+            "note": "Automated order"
+        },
+        "labResult": {
+            "status": "LAB_PENDING",
+            "resultText": "Result available (delayed)",
+            "value": "NORMAL"
+        },
+        "protocolUpdate": {
+            "diagnosis": "sumary dia",
+            "protocolname": "Standard Fever Protocol",
+            "medication ": "tiffy",
+            "dose": "400mg",
+            "frequency": "3x"
+        },
+        "doctorChange": {
+            "newDoctor": "doctor01"
+        }
+    }
+]
