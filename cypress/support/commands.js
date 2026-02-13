@@ -1,38 +1,30 @@
-// Tài khoản
+// ***********************************************
+// This example commands.js shows you how to
+// create various custom commands and overwrite
+// existing commands.
+//
+// For more comprehensive examples of custom
+// commands please read more here:
+// https://on.cypress.io/custom-commands
+// ***********************************************
+//
+//
+// -- This is a parent command --
+// Cypress.Commands.add('login', (email, password) => { ... })
+//
+//
+// -- This is a child command --
+// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
+//
+//
+// -- This is a dual command --
+// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
+//
+//
+// -- This will overwrite an existing command --
+// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 Cypress.Commands.add('login', (username, password) => {
-  cy.visit('https://autotestsandbox.com/labs/healthcare-multi-stage-treatment')
-  cy.get('[data-test-id="username"]').type(username);
-  cy.get('[data-test-id="password"]').type(password);
-  cy.get('[data-test-id="btn-login"]').contains("Login").click({ force: true });
+  cy.get('[data-test-id="username"]').clear().type(username)
+  cy.get('[data-test-id="password"]').clear().type(password)
+  cy.get('[data-test-id="btn-login"]').click()
 })
-Cypress.Commands.add('openPatient', (fullName) => {
-  cy.log(`Open patient: ${fullName}`)
-})
-
-
-// Verify
-Cypress.Commands.add('verifyCaseDetail', () => {
-  cy.fixture('BT3').then(({ verifyCaseDetail }) => {
-    const {
-      caseCode,
-      status,
-      doctor,
-      patientName,
-      dob,
-      triage,
-      department
-    } = verifyCaseDetail
-
-    cy.contains(caseCode)
-    cy.contains(status)
-    cy.contains(doctor)
-    cy.contains(patientName)
-    cy.contains(dob)
-    cy.contains(triage)
-    cy.contains(department)
-    cy.contains('Patient admitted')
-  })
-})
-
-//import fille
-import 'cypress-file-upload';

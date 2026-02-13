@@ -1,0 +1,14 @@
+{
+    "case": "Register patient admission details",
+    "fullName": "Tom Holland",
+    "dob": "2008-08-16",
+    "gender": "Male",
+    "nationalId": "123456789000",
+    "phone": "0972000000",
+    "insuranceNo": "BH123456",
+    "address": "No 1, 123 Street",
+    "reason": "Uncontrolled hypertension",
+    "level": "Low",
+    "initialdepartment": "Cardiology",
+    "expectedStatus": "ADMITTED"
+}
