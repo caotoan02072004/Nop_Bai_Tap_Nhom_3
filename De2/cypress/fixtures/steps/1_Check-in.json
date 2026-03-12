@@ -1,0 +1,10 @@
+{
+  "bookingcode": "BK-111-0001",
+  "passport": "A1234567",
+  "phone": "0123456789",
+  "email": "nguyena@gmail.com",
+  "checkindate": "2026-02-20 12:00", 
+  "checkoutdate": "2026-02-22 12:00",
+  "number": "2",
+  "deposit": "400000"
+}
