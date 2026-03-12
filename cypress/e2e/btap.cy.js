@@ -66,6 +66,14 @@ describe("cb2", () => {
 describe.only("cb3", () => {
   // code here
   it("Test description", () => {
+    cy.visit(
+      "https://autotestsandbox.com/labs/canvas-drawing-and-bounding-box-overlay",
+    );
+
+    const canvas = cy.get('[data-test-id="lab-075-canvas"]');
+    const btnDraw = cy.get('[data-test-id="lab-075-draw"]');
+    const toggle = cy.get('[data-test-id="lab-075-toggle"]');
+    
     // code here
     cy.get('[data-test-id="lab-075-draw"]').click();
     cy.get('[data-test-id="lab-075-toggle"]').click();

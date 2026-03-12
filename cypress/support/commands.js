@@ -23,3 +23,14 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+//login
+Cypress.Commands.add("login", (username) => {
+  cy.visit("https://autotestsandbox.com/labs/healthcare-multi-stage-treatment");
+  //username
+  cy.get('[data-test-id="username"]').type(username);
+  //password
+  cy.get('[data-test-id="password"]').type("Pass1234");
+
+  cy.get('[data-test-id="btn-login"]').click();
+});
