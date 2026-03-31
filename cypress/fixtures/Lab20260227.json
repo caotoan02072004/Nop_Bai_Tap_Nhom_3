@@ -1,0 +1,9 @@
+{
+    "validCourseCreation":{
+        "courseName":"Automation Testing",
+        "description": "This course provides a comprehensive introduction to automated software testing. Participants will learn the fundamentals of test automation, including writing automated test scripts, using testing frameworks, and integrating automated tests into the software development lifecycle",
+        "category": "Automation",
+        "duration(hours)": "105",
+        "tuitionFee(VND)": "15000000"
+    }
+}
