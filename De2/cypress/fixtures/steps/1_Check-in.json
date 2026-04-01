@@ -1,0 +1,12 @@
+{
+  "bookingCode": "BK-111-0001",
+  "roomNumber": "101",
+  "guestFullName": "Nguyen Van AutoTest",
+  "guestIdNumber": "A123456",
+  "guestPhone": "0123456789",
+  "guestEmail": "",
+  "checkInDatetime": "2026-04-01T09:00",
+  "plannedCheckoutDatetime": "2026-04-03T11:00",
+  "numGuests": 2,
+  "depositAmount": 500000
+}
