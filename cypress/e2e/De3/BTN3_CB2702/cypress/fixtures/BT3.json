@@ -1,0 +1,57 @@
+[
+  {
+    "courseName": "Cypress Automation",
+    "price": "Automation testing course",
+    "category": "QA",
+    "hours": "40",
+    "tuition": "100000",
+    "studentName": "Hiếu",
+    "studentEmail": "hieu@gmail.com",
+    "paymentMethod": "CASH",
+    "payAmount": "100000",
+    "examScore": "80",
+
+    "steps": [
+      {
+        "status": "Course published.",
+        "timeline": "Instructor | PUBLISH_COURSE"
+      },
+      {
+        "status": "Enrollment successful.",
+        "timeline": "Student | ENROLL | Note: Hiếu"
+      },
+      {
+        "status": "Tuition paid.",
+        "timeline": "Student | PAY_TUITION | Note: CASH 100,000 VND"
+      },
+      {
+        "status": "Class opened.",
+        "timeline": "Admin | OPEN_CLASS"
+      },
+      {
+        "status": "Learning started.",
+        "timeline": "Student | START_LEARNING"
+      },
+      {
+        "status": "Lesson 1: Foundations completed.",
+        "timeline": "Student | LESSON_COMPLETED | Note: Lesson 1: Foundations"
+      },
+      {
+        "status": "Lesson 2: Practice completed.",
+        "timeline": "Student | LESSON_COMPLETED | Note: Lesson 2: Practice"
+      },
+      {
+        "status": "Lesson 3: Review completed.",
+        "timeline": "Student | LESSON_COMPLETED | Note: Lesson 3: Review"
+      },
+      {
+        "status": "Exam passed.",
+        "timeline": "Student | EXAM_PASSED | Note: Score 80"
+      },
+      {
+        "status": "Certificate issued.",
+        "timeline": "Admin | ISSUE_CERTIFICATE | Note: CERT-115-0001"
+      }
+    ]
+  }
+]
